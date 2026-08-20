@@ -129,6 +129,21 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - Curl real no Docker: PDF válido → 202 `{id:1,filename:teste.pdf,status:queued}`; não-PDF → 415; >20MB → 413 `"Arquivo excede o limite de 20MB."`.
 - Arquivos com UUID em `uploads/`; registros em `documents` com `stored_filename` (via `docker compose cp` + sqlite).
 
+## Execução — T3: Processamento (extração, chunking e status)
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| D1 | **PyMuPDF** para extração | Escolha do usuário; rápido e robusto (texto/imagens/CJK); wheels manylinux → instala sem compilar no `python:3.12-slim`; custo real = imagem ~+40MB. Detecção de PDF escaneado: texto vazio → `failed` com motivo claro (US16) | **usuário** |
+| D2 | Calcular + validar chunks por teste; **persistir só `status` + `page_count`** | T4 refaz extração/chunking e indexa no Qdrant; sem schema duplicado agora | **usuário** |
+| D3 | Tokenização **heurística por palavras**; chunks **não cruzam páginas** (página = 1º token); overlap clampado (nunca regride) | Determinística p/ testes; referência por página mais limpa; sem tokenizer externo (ponto de troca documentado) | agente (vetável) |
+| D4 | `BackgroundTasks` dispara `process_document` com **sessão própria** (`SessionLocal`) | A sessão da requisição já fechou quando o background roda; evita conexão órfã | agente (vetável) |
+| D5 | Em pytest o background vira **no-op** (monkeypatch); caminho real validado no Docker | `:memory:` do conftest não tem schema; teste determinístico do `ProcessingService` direto | agente (vetável) |
+| D6 | `GET /documents` (lista) + `GET /documents/{id}` (status/page_count/error) + `DocumentDetailOut`; 404 se inexistente | API da spec; consumida pelo frontend (T6) | agente (vetável) |
+
+**Verificação (aceite do T3):**
+- 22 testes passando (chunker: divisão, overlap, página, sem palavra cortada, não cruza página; processamento: ready, page_count multi-página, escaneado→failed, lista, 404) + ruff limpo.
+- Curl no Docker: upload `texto.pdf` → `queued` → (background) → `ready` com `page_count: 2`; `scan.pdf` → `failed` com motivo "não foi possível extrair texto (pode ser PDF escaneado)".
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -151,3 +166,6 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 18:0x — **Acordo de trabalho** revisado com o usuário (nível 3 imersivo; voz em backend/arquitetura + UX) e formalizado no AGENTS.md. Commit+push do T1 (`d1a496f`); issue #2 fechada.
 - 18:1x — **T2** executado (TDD): teste red → UploadService (magic bytes, chunks com teto, sanitização, UUID), repository, schema, rota POST /documents (202/400/413/415), `stored_filename` no modelo, `python-multipart`. 8 testes green, ruff limpo; validação real no Docker (curl: 202/415/413) + arquivos UUID em `uploads/` + registros no DB.
 - 18:2x — Decisões C1–C8 registradas; checkpoint apresentado ao usuário.
+- 18:4x — Commit+push do T2 (`0a751ad`); issue #3 fechada.
+- 19:0x — **T3** (imersivo): usuário escolheu **PyMuPDF** (explicado honestamente o tradeoff Docker) e **calcular+validar por teste, persistir só status+page_count**. Chunker (heurística por palavras, sem cortar palavra, página no metadata, não cruza página), extrator PyMuPDF, ProcessingService com sessão própria, BackgroundTasks no POST, GET /documents + /documents/{id}. TDD pegou 2 bugs de asserção no teste + background atacando :memory: (resolvido com no-op em pytest + validação real no Docker).
+- 19:1x — Validação no Docker: texto.pdf → ready (page_count 2); scan.pdf → failed com motivo. Decisões D1–D6 registradas.

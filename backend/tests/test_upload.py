@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.api.routes import documents as documents_route
 from app.db.base import Base
 from app.db.deps import get_db
 from app.main import app
@@ -10,7 +11,11 @@ from app.services.upload import UploadService, get_upload_service
 
 
 @pytest.fixture()
-def client(tmp_path):
+def client(tmp_path, monkeypatch):
+    # O background real de processamento é validado no Docker; em pytest ele
+    # atacaria o SessionLocal (:memory: do conftest) sem schema.
+    monkeypatch.setattr(documents_route, "process_document", lambda document_id: None)
+
     engine = create_engine(
         f"sqlite:///{tmp_path / 'test.db'}",
         connect_args={"check_same_thread": False},

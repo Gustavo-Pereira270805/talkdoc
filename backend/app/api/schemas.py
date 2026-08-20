@@ -7,3 +7,8 @@ class DocumentOut(BaseModel):
     id: int
     filename: str
     status: str
+
+
+class DocumentDetailOut(DocumentOut):
+    page_count: int | None = None
+    error: str | None = None
