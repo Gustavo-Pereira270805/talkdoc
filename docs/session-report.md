@@ -111,6 +111,24 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - Log do migrate: `Schema pronto. Tabelas: conversation_documents, conversations, documents, messages`.
 - Testes locais: 3 passed (health + migrate cria schema + idempotência), ruff limpo.
 
+## Execução — T2: Upload de Documento com validação
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| C1 | PDF salvo em **volume Docker `uploads/`** no backend | Simples, já existente no compose; T3 lê o arquivo localmente. Suficiente p/ escopo | **usuário** |
+| C2 | `POST /documents` → **202** `{id, filename, status:"queued"}` | Comunica aceite + assíncrono, coerente com polling do T3 | **usuário** |
+| C3 | Validação por **magic bytes `%PDF`** + leitura em chunks (64KB) com teto | Não carrega arquivos gigantes na memória; content-type é forjável | agente (vetável) |
+| C4 | Mapeamento de erros: **400** vazio, **413** >20MB, **415** não-PDF, com `detail` em PT-BR | Semântica HTTP correta + mensagens compreensíveis (US3) | agente (vetável) |
+| C5 | Sanitização: remove caminho (`Path().name`), acentos (NFKD), inseguros→`_`; garante `.pdf` | Anti path-traversal (OWASP) + nomes legíveis; teste `café relatório!.pdf`→`cafe_relatorio.pdf` | agente (vetável) |
+| C6 | Arquivo em disco com **nome UUID** + coluna `stored_filename` no modelo | Evita colisão de nomes; liga banco↔disco para o T3 | agente (vetável) |
+| C7 | Camadas: `api/routes/documents.py`, `services/upload.py`, `repositories/documents.py`, `api/schemas.py`, `db/deps.py` (`get_db`) | Decisão A11; `get_db` é o seam testável | agente (vetável) |
+| C8 | `python-multipart`; `HTTP_413_CONTENT_TOO_LARGE` (nome novo pós-depreciação) | UploadFile exige a lib; zerar warnings | agente (vetável) |
+
+**Verificação (aceite do T2):**
+- 8 testes passando (valid, 415, 413, sanitização, vazio) + ruff limpo.
+- Curl real no Docker: PDF válido → 202 `{id:1,filename:teste.pdf,status:queued}`; não-PDF → 415; >20MB → 413 `"Arquivo excede o limite de 20MB."`.
+- Arquivos com UUID em `uploads/`; registros em `documents` com `stored_filename` (via `docker compose cp` + sqlite).
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -130,3 +148,6 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 17:2x — Frontend scaffold (Vite+React+TS+Tailwind v4, estrutura src/{api,components,pages,hooks,lib}), Dockerfiles (backend/migrate/frontend-nginx), docker-compose (qdrant+migrate+backend+frontend), .env.example.
 - 17:3x — Docker Desktop iniciado (instalação por-usuário); containers antigos de estudo removidos (autorizado); `docker compose up` validado: qdrant healthy, migrate (4 tabelas), /health OK, frontend 200; screenshot de evidência.
 - 17:4x — Verificação do LSP: pyright não achava deps (usava Python MinGW); `pyrightconfig.json` aponta para o venv. Decisões B1–B10 registradas no relatório.
+- 18:0x — **Acordo de trabalho** revisado com o usuário (nível 3 imersivo; voz em backend/arquitetura + UX) e formalizado no AGENTS.md. Commit+push do T1 (`d1a496f`); issue #2 fechada.
+- 18:1x — **T2** executado (TDD): teste red → UploadService (magic bytes, chunks com teto, sanitização, UUID), repository, schema, rota POST /documents (202/400/413/415), `stored_filename` no modelo, `python-multipart`. 8 testes green, ruff limpo; validação real no Docker (curl: 202/415/413) + arquivos UUID em `uploads/` + registros no DB.
+- 18:2x — Decisões C1–C8 registradas; checkpoint apresentado ao usuário.

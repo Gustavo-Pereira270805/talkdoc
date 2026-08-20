@@ -40,6 +40,7 @@ class Document(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    stored_filename: Mapped[str] = mapped_column(String(255), nullable=False)
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, default=DocumentStatus.QUEUED.value
     )
