@@ -77,6 +77,17 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 
 - Nenhum subagente ainda; planejamento feito diretamente com protocolos `grilling` + `domain-modeling` (skills model-invoked). Previsão: subagentes paralelos em `/code-review` e `/research` durante a execução.
 
+## Infra de UI/UX, design e segurança (pré-execução)
+
+| Item | Decisão | Justificativa |
+|---|---|---|
+| A21 | **MCP `playwright`** (`@playwright/mcp`) em `opencode.json` | Navegador real para testes E2E e screenshots com evidência |
+| A22 | **Webwright** (Microsoft, MIT, ~6k stars) clonado em `C:\Users\Milena\webwright`; skill `webwright` em `.agents/skills/` | Browser agent terminal-native (código-como-ação): scripts Playwright re-utilizáveis, screenshots e verificação visual por plano de pontos críticos |
+| A23 | Subagente **`ui-vision`** (`.opencode/agent/ui-vision.md`, modelo `9router/VisionBetter`) | Auditagem visual de UI/UX: hierarquia, tipografia, contraste WCAG, estados, acessibilidade, com feedback acionável |
+| A24 | Skills de design: `web-design-guidelines` + `vercel-composition-patterns` (Vercel) | Revisão de UI contra Web Interface Guidelines; composição React (compound components, render props) |
+| A25 | Skills de segurança: `owasp-security-check` (sergiodxa) + `testing-api-security-with-owasp-top-10` (Anthropic) | Checklist OWASP na revisão de código; testes de segurança de API (validação, auth, injeção, SSRF, secrets) |
+| A26 | Browsers Playwright instalados (chromium + firefox) | Chromium para o MCP; firefox para o skill webwright |
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -91,3 +102,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 15:40 — Confirmação do entendimento compartilhado; `/to-spec` publica a spec como issue #1.
 - 15:50 — ADRs 0001–0005 registrados; `/to-tickets` publica T1–T10 (#2–#11) com dependências nativas; corpos corrigidos após problema de encoding no round-trip PowerShell.
 - 15:55 — Relatório atualizado; commit do planejamento.
+- 16:05 — Infra de UI/UX preparada: MCP playwright, Webwright clonado + skill, subagente `ui-vision`, skills de design (Vercel) e segurança (OWASP), browsers instalados.
