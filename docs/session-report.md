@@ -71,7 +71,7 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
   - T1 (#2) livre → T2 (#3) → T3 (#4) → T4 (#5) → T5 (#6)
   - T6 (#7) depende de T2; T7 (#8) de T5+T6; T8 (#9) de T3+T6; T9 (#10) de T7; T10 (#11) de T9
 - Labels criados: `ready-for-agent`, `wayfinder:map`
-- Fronteira atual: **T1** (Fundação do monorepo) pronto para execução
+- Fronteira atual: **T1** (Fundação do monorepo) — **em execução**
 
 ## Uso de subagentes
 
@@ -88,6 +88,29 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 | A25 | Skills de segurança: `owasp-security-check` (sergiodxa) + `testing-api-security-with-owasp-top-10` (Anthropic) | Checklist OWASP na revisão de código; testes de segurança de API (validação, auth, injeção, SSRF, secrets) |
 | A26 | Browsers Playwright instalados (chromium + firefox) | Chromium para o MCP; firefox para o skill webwright |
 
+## Execução — T1: Fundação do monorepo e docker compose
+
+| # | Decisão | Justificativa |
+|---|---|---|
+| B1 | Backend com `pyproject.toml` (hatchling), deps mínimas (fastapi, uvicorn, sqlalchemy, pydantic-settings) e dev group (pytest, httpx, ruff) | Pacote pequeno e rápido de instalar no Docker; lint com ruff (`E,F,I,UP,B`) |
+| B2 | Modelos SQLAlchemy 2 declarativos: `documents` (status enum `StrEnum`: queued/extracting/indexing/ready/failed), `conversations`, `messages` (refs JSON) + associação `conversation_documents` (multi-documento) | Reflete A9/A18; schema já cobre os tickets seguintes |
+| B3 | `migrate.py` idempotente via `Base.metadata.create_all` (sem Alembic) rodando como serviço compose `migrate` (`python -m scripts.migrate`) | Schema simples; Alembic seria overkill; `-m` garante import de `app.*` |
+| B4 | Config via pydantic-settings: `DATABASE_URL`, `QDRANT_URL`, `CORS_ORIGINS` (CSV) com defaults docker | Zero config para subir; chaves (Groq/Gemini) entram só no T4/T5 |
+| B5 | `/health` retorna `{"status":"ok"}` (rota em `app/api/routes/health.py`) | Healthcheck do compose e sonda do backend |
+| B6 | Compose: `qdrant` (healthcheck `/dev/tcp`), `migrate` (completa 1x), `backend` (depende de qdrant healthy + migrate completed), `frontend` (nginx, 8080) | Orquestração determinística sem script externo |
+| B7 | Compose funciona **sem `.env`**: interpolação `${VAR:-default}`; `.env.example` documenta chaves | `docker compose up` a partir de clone limpo sem config prévia (critério de aceite) |
+| B8 | Frontend: Vite 8 + React 19 + TS 6 + Tailwind v4 (`@tailwindcss/vite`); estrutura `src/{api,components,pages,hooks,lib}`; nginx serve o build | Scaffold oficial + decisão A12; pasta vazia no T1 com `.gitkeep` |
+| B9 | `pyrightconfig.json` no backend apontando `venvPath=.` / `venv=.venv` | Python default do sistema é MinGW (layout Unix); LSP precisava achar o venv Windows |
+| B10 | Containers antigos (`meu-app-ia`, `meu-banco-vetorial`, de 30/07) parados e removidos | Ocupavam as portas 8000/6333; autorizado pelo usuário |
+
+**Verificação (aceite do T1):**
+- `docker compose build` → imagens `talkdoc-backend`, `talkdoc-migrate`, `talkdoc-frontend`.
+- `docker compose up -d` → qdrant `healthy`, migrate saiu com código 0, backend `healthy`, frontend up.
+- `GET http://localhost:8000/health` → `{"status":"ok"}`.
+- `GET http://localhost:8080/` → HTTP 200 (HTML TalkDoc); renderizado e verificado via MCP Playwright; screenshot em `evidence/t1-frontend-foundation.png`.
+- Log do migrate: `Schema pronto. Tabelas: conversation_documents, conversations, documents, messages`.
+- Testes locais: 3 passed (health + migrate cria schema + idempotência), ruff limpo.
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -103,3 +126,7 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 15:50 — ADRs 0001–0005 registrados; `/to-tickets` publica T1–T10 (#2–#11) com dependências nativas; corpos corrigidos após problema de encoding no round-trip PowerShell.
 - 15:55 — Relatório atualizado; commit do planejamento.
 - 16:05 — Infra de UI/UX preparada: MCP playwright, Webwright clonado + skill, subagente `ui-vision`, skills de design (Vercel) e segurança (OWASP), browsers instalados.
+- 17:0x — Início da execução do **T1** (permissão para commitar/push em aberto): backend esqueleto (main, config, /health), modelos SQLAlchemy 2, migrate idempotente, testes (3 passed), ruff limpo.
+- 17:2x — Frontend scaffold (Vite+React+TS+Tailwind v4, estrutura src/{api,components,pages,hooks,lib}), Dockerfiles (backend/migrate/frontend-nginx), docker-compose (qdrant+migrate+backend+frontend), .env.example.
+- 17:3x — Docker Desktop iniciado (instalação por-usuário); containers antigos de estudo removidos (autorizado); `docker compose up` validado: qdrant healthy, migrate (4 tabelas), /health OK, frontend 200; screenshot de evidência.
+- 17:4x — Verificação do LSP: pyright não achava deps (usava Python MinGW); `pyrightconfig.json` aponta para o venv. Decisões B1–B10 registradas no relatório.

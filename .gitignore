@@ -28,6 +28,9 @@ uploads/
 *.sqlite3
 *.db
 
+# Playwright MCP snapshots
+.playwright-mcp/
+
 # OS / editors
 .DS_Store
 Thumbs.db

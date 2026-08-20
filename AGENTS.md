@@ -36,3 +36,14 @@ Fluxo de planejamento: `/grill-with-docs` → `/to-spec` → `/to-tickets` (→ 
 - MCP `playwright` configurado em `opencode.json` (navegador real para testes E2E)
 - Subagente `ui-vision` (`.opencode/agent/ui-vision.md`) — visão para auditagem de UI/UX de screenshots
 - `image-analyzer` (global) — análise genérica de imagens
+
+## Working agreement (acordo de trabalho com o usuário)
+
+Abordagem **mista com decisões focalizadas + checkpoints visuais**, nível **imersivo**.
+
+- **Ritmo por ticket**: brief (o que/por quê/como validar) → decisões focalizadas (máx. 2-3 perguntas com opções + recomendação) → execução TDD → checkpoint visual/evidência → aprovação do usuário antes de qualquer commit/push.
+- **Nunca** commitar ou dar push sem permissão explícita do usuário.
+- O usuário tem voz ativa em **backend/arquitetura** e **UX/comportamento**; decisões nessas áreas devem ser consultadas nos pontos-chave. Mecânica de implementação (libs internas, detalhes de teste) o agente decide e registra.
+- Nível imersivo: em tickets de backend, explicar o código ao usuário em tempo real (pair programming guiado), sem jargão desnecessário; porquês de 1-2 linhas em português.
+- Toda decisão é registrada em `docs/session-report.md` (tabela de decisões + log), marcando "decidido pelo usuário" vs "decidido pelo agente (vetável)".
+- Checkpoint: mostrar evidência (screenshot auditada pelo `ui-vision` em frontend; testes/curl em backend) e atualizar issues e relatório.
