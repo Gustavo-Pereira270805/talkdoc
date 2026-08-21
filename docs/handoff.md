@@ -17,24 +17,24 @@
 
 ## Estado atual (tickets)
 
-- ✅ T1 (#2 fechada) — fundação monorepo, docker compose (qdrant/migrate/backend/frontend), commit `d1a496f`
-- ✅ T2 (#3 fechada) — upload com validação (magic bytes %PDF, 20MB, sanitização, UUID), commit `0a751ad`
-- ✅ T3 (#4 fechada) — processamento background (PyMuPDF, chunker 800 tokens/15% overlap, status), commit `402e6d8`
-- ✅ T4 (#5 fechada) — embeddings Gemini + indexação Qdrant, commit `1b0bd13`
-- ✅ T5 (#6 fechada) — chat RAG com SSE (Groq streaming, refs S1..S5, persistência), commit `22c5051`
-- ⏳ **T6 (#7)** — Frontend upload/status/erros: **commitado** (`7169467` docs, `d385474` feat), issue fechada
-- ⏳ **T7 (#8)** — Frontend conversas/chat: **implementado e validado** (decisões I1–I9 no report); **aguardando aprovação de commit**
-- 🔜 T8 (#9) CI, T9 (#10) imagens prod + clone limpo, T10 (#11) README/screenshots/colaboradores
+- ✅ T1–T5 (commits `d1a496f`→`22c5051`) — fundação, upload, processamento, embeddings+Qdrant, chat SSE backend
+- ✅ T6 (#7 fechada) — frontend upload/status/erros + tema terminal + gatinho pixel (`7169467` docs, `d385474` feat)
+- ✅ T7 (#8 fechada) — frontend conversas/chat/refs (`87e2b96` docs, `2e30b04` feat)
+- 🔜 **T8 (#9) CI**, T9 (#10) imagens prod + clone limpo, T10 (#11) README/screenshots/colaboradores
 
-## T7 — estado atual
+## T8 — próximo passo exato
 
-**Tudo implementado e validado** (decisões I1–I9 no `session-report.md`):
-- `src/api/conversations.ts` (CRUD + **parser SSE incremental** com `fetch`/ReadableStream: CRLF, comentários, chunks cortados) + hooks `useConversations.ts`
-- Páginas `ConversationsPage` (lista + seletor de docs com checkboxes) e `ChatPage` (histórico, stream token a token, **"transmitindo▮"** + gatinho frontal "pensando", refs S1..S5 em cards âmbar expandíveis, autoscroll + botão, erros inline); rotas em `App.tsx`
-- `PixelCatFront` (gatinho frontal 18x14, rabinho atrás alternando lados) + `ChatInput` + `ChatMessage`/`RefCard`
-- 24 testes verdes (13 novos), build+lint ok; E2E real validado (evidências `evidence/t7-*.png`, auditoria ui-vision 3x)
-- NÃO commitado: frontend do T7 + report/handoff (pedir permissão; docs em commit separado como no T6)
-- **Recomendação: rotacionar GEMINI_API_KEY** (2 incidentes) — ainda pendente
+Issue #9 (ver no GitHub com `gh issue view 9`): CI. Proposta de trabalho (a validar com a usuária — **todas as decisões principais passam por ela**):
+1. Apresentar brief + decisões: provider (GitHub Actions vs outro), gatilho (push/PR), jobs (backend: pytest+ruff em container; frontend: vitest+build+lint; opcional: build das imagens Docker e push pro GHCR)
+2. Executar com TDD quando aplicável (CI em si é config; testes unitários novos se necessário)
+3. Validar: rodar o pipeline em branch/PR real, evidência no GitHub Actions
+4. Registrar decisões no `docs/session-report.md` + checkpoint + aprovação de commit
+
+## Estado do repositório
+
+- `main` com T1–T7. Working tree: limpo (git status sem pendências). Containers Docker rodando (qdrant healthy, backend, frontend).
+- **Pendência de segurança**: rotacionar `GEMINI_API_KEY` no Google AI Studio (exposta em 2 incidentes históricos: URL de erro no T4 e dado velho na UI no T6 — ambos já sanitizados no código/banco). A chave atual ainda funciona.
+- **Skills globais instaladas**: `no-ai-slop` (texto/README), `pixel-art-sprites`, além das do repo.
 
 ## Ambiente e comandos
 
