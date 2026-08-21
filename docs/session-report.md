@@ -144,6 +144,23 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 22 testes passando (chunker: divisão, overlap, página, sem palavra cortada, não cruza página; processamento: ready, page_count multi-página, escaneado→failed, lista, 404) + ruff limpo.
 - Curl no Docker: upload `texto.pdf` → `queued` → (background) → `ready` com `page_count: 2`; `scan.pdf` → `failed` com motivo "não foi possível extrair texto (pode ser PDF escaneado)".
 
+## Execução — T4: Índice no Qdrant com embeddings reais (Gemini)
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| E1 | Métrica **cosseno** na coleção do Qdrant | Padrão para similaridade semântica de texto | **usuário** |
+| E2 | Falha do Gemini no processamento → documento `failed` com motivo | Consistente com T3; simples e previsível | **usuário** |
+| E3 | **`gemini-embedding-001` com `outputDimensionality: 768`** | `text-embedding-004` da spec **não disponível na conta** (descoberto via `ListModels`; retornava "model not found"); gemini-embedding-001 é estável e suporta 768 | agente (vetável) |
+| E4 | `EmbedderClient` como **Protocol** + `GeminiEmbedder` (httpx REST) | A2: troca de provider não toca o pipeline (aceite T4); fake determinístico nos testes | agente (vetável) |
+| E5 | **Chave por header `x-goog-api-key`** (não query param) + erro limpo (sem URL) | Incidente real: chave vazou na URL de um erro 404; header evita vazamento em logs (OWASP); usuário alertado p/ rotacionar token antigo | agente (vetável) |
+| E6 | `QdrantIndexer`: coleção `chunks` (768/cosseno), point id `doc_id*100000+idx`, payload `document_id+page+text`, `search` com filtro por documento | A9/ADR-0003; pontos com id inteiro (Qdrant exige int/UUID) | agente (vetável) |
+| E7 | Coleção criada no **boot** (lifespan) best-effort + `ensure_collection` sob demanda; pytest com no-op do Qdrant (fixture autouse) | Aceite T4; testes rápidos e determinísticos (6s vs 40s) | agente (vetável) |
+
+**Verificação (aceite do T4):**
+- 24 testes passando + ruff limpo.
+- Docker (chave real): upload `rag.pdf` → `ready` (page_count 3); coleção `chunks` com 3 pontos, dim 768, cosseno; payloads `document_id:7` + `page:1..3` + texto (via scroll REST do Qdrant).
+- Detalhes do caminho: chave inicial era token OAuth (`AQ.`) → trocada por API key (`AIzaSy`, 39 chars); aspas simples no `.env` são removidas pelo Compose (valor correto no container); `ListModels` revelou modelos disponíveis.
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -169,3 +186,6 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 18:4x — Commit+push do T2 (`0a751ad`); issue #3 fechada.
 - 19:0x — **T3** (imersivo): usuário escolheu **PyMuPDF** (explicado honestamente o tradeoff Docker) e **calcular+validar por teste, persistir só status+page_count**. Chunker (heurística por palavras, sem cortar palavra, página no metadata, não cruza página), extrator PyMuPDF, ProcessingService com sessão própria, BackgroundTasks no POST, GET /documents + /documents/{id}. TDD pegou 2 bugs de asserção no teste + background atacando :memory: (resolvido com no-op em pytest + validação real no Docker).
 - 19:1x — Validação no Docker: texto.pdf → ready (page_count 2); scan.pdf → failed com motivo. Decisões D1–D6 registradas.
+- 19:3x — Commit+push do T3 (`402e6d8`); issue #4 fechada.
+- 19:5x — **T4**: usuário escolheu cosseno + failed com motivo. EmbedderClient (Protocol) + GeminiEmbedder (header auth), QdrantIndexer (coleção 768/cosseno, upsert com payload, search filtrado), lifespan no boot, fakes nos testes. Incidente de segurança: chave vazou em URL de erro → corrigido (header + erro limpo), usuário orientado a rotacionar. Chave inicial (AQ.) inválida; nova (AIzaSy) com aspas no .env (Compose resolve). `text-embedding-004` indisponível na conta → `gemini-embedding-001` (768).
+- 20:0x — Validação Docker: rag.pdf → ready; Qdrant com 3 pontos (doc 7, páginas 1-3, payload ok). Decisões E1–E7 registradas.

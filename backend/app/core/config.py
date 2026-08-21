@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173,http://localhost,http://localhost:8080"
     max_upload_size_mb: int = 20
     upload_dir: str = "uploads"
+    groq_api_key: str = ""
+    gemini_api_key: str = ""
+    qdrant_collection: str = "chunks"
+    embedding_model: str = "gemini-embedding-001"
+    embedding_dim: int = 768
+    qdrant_timeout: int = 3
 
     @property
     def cors_origins_list(self) -> list[str]:

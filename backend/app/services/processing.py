@@ -3,14 +3,24 @@ from pathlib import Path
 from app.core.config import settings
 from app.db.models import DocumentStatus
 from app.rag.chunker import chunk_document
+from app.rag.embedder import EmbedderClient, build_embedder
 from app.rag.extractor import extract_pages
+from app.rag.indexer import IndexerClient, build_indexer
 from app.repositories.documents import DocumentRepository
 
 
 class ProcessingService:
-    def __init__(self, repository: DocumentRepository, upload_dir: Path | None = None):
+    def __init__(
+        self,
+        repository: DocumentRepository,
+        upload_dir: Path | None = None,
+        embedder: EmbedderClient | None = None,
+        indexer: IndexerClient | None = None,
+    ):
         self.repository = repository
         self.upload_dir = upload_dir or Path(settings.upload_dir)
+        self.embedder = embedder or build_embedder()
+        self.indexer = indexer or build_indexer()
 
     def process(self, document_id: int) -> None:
         document = self.repository.get(document_id)
@@ -23,7 +33,7 @@ class ProcessingService:
 
             pdf_path = self.upload_dir / document.stored_filename
             pages = extract_pages(pdf_path)
-            chunk_document(pages)  # calculado/validado aqui; consumido pelo T4 (indexação)
+            chunks = chunk_document(pages)
 
             document.page_count = len(pages)
             total_text = sum(len(page.text) for page in pages)
@@ -35,7 +45,8 @@ class ProcessingService:
                     "(pode ser um PDF escaneado, sem camada de texto)."
                 )
             else:
-                # T4 fará o embedding e a indexação dos chunks no Qdrant.
+                vectors = self.embedder.embed_documents([chunk.text for chunk in chunks])
+                self.indexer.upsert_document(document.id, chunks, vectors)
                 document.status = DocumentStatus.READY.value
                 document.error = None
             self.repository.session.commit()

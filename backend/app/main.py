@@ -1,11 +1,31 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.documents import router as documents_router
 from app.api.routes.health import router as health_router
 from app.core.config import settings
+from app.rag.indexer import build_indexer
 
-app = FastAPI(title=settings.app_name, version="0.1.0")
+logger = logging.getLogger("talkdoc")
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    try:
+        build_indexer().ensure_collection()
+        logger.info("Coleção Qdrant '%s' pronta.", settings.qdrant_collection)
+    except Exception:
+        logger.warning(
+            "Qdrant indisponível no boot; o indexador garante a coleção sob demanda.",
+            exc_info=True,
+        )
+    yield
+
+
+app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
