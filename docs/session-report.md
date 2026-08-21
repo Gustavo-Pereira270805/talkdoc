@@ -222,6 +222,23 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - **Flakiness de teste diagnosticada**: `findByText` resolvia com a mensagem *pendente* transitória e o `toBeInTheDocument` rodava após a remoção → asserts migradas para `waitFor` (atômico); causa documentada.
 - Bug conhecido menor (vetável): o E2E numa conversa com `up.pdf` (doc aleatório) gerou resposta honesta "não sei" — comportamento correto (US9) e desejável.
 
+## Execução — T8: CI no GitHub Actions
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| J1 | **eslint + prettier** no frontend (substituem o oxlint); `lint` → `eslint .`, novo `format:check` → `prettier --check .` | Spec pede explicitamente eslint/prettier — é o que o desafio avalia; oxlint era alternativa mais rápida mas fora da spec | **usuário** |
+| J2 | **mypy modo default** no backend (`[tool.mypy]` em `pyproject.toml`: python_version 3.12, `files=app`, `check_untyped_defs`) | Entra no verde sem refatoração massiva de anotações; strict fica documentado como evolução | **usuário** |
+| J3 | **Branch protection em `main`**: required checks (`backend` + `frontend`), admins não isentos de checks, sem exigência de review | Spec: "qualquer falha bloqueia o merge" — só status não bloqueia; temos admin no repo | **usuário** |
+| J4 | Workflow único `.github/workflows/ci.yml`: gatilhos `push` + `pull_request` em `main`; **2 jobs paralelos** (backend: ruff → mypy → pytest; frontend: eslint → prettier → vitest → build); caches pip/npm; `concurrency` cancela execução antiga; `permissions: contents: read` | AC da issue; jobs paralelos = feedback rápido; sem secrets (testes 100% mockados — nada de Qdrant/chaves no CI) | agente (vetável) |
+| J5 | Backend no CI: `python:3.12` (igual à imagem Docker de prod), `pip install --group dev .` (PEP 735) | Consistência prod/CI; sintaxe validada localmente (pip 26) | agente (vetável) |
+| J6 | Correção de tipos p/ mypy: iteração indexada no PyMuPDF (`range(len(document))` + `document[index]` — stubs não tipam `__iter__`); `request: dict[str, object]` no payload do Gemini (inferência `Collection[str]` × int) | Mecânico; 2 arquivos | agente (vetável) |
+| J7 | Refactor do `ChatPage`: `ChatPage` parseia o id e renderiza `ChatRoom key={id}` — o reset de estado por `useEffect` (com setState no efeito) foi **eliminado** (a regra nova `react-hooks/set-state-in-effect` do eslint acusa como erro) | Remount por `key` é o padrão React idiomático; remove classe de bug de stream travado ao trocar de conversa | agente (vetável) |
+| J8 | Frontend normalizado pelo prettier (`--write` em 29 arquivos: aspas simples, sem `;`, printWidth 100, trailingComma all) | Formatação mecânica — o CI passa a exigir | agente (vetável) |
+
+**Verificação (aceite do T8):**
+- **Local (pré-push)**: backend — mypy `Success: no issues found in 28 source files`, ruff ✓, pytest 31 ✓. Frontend — eslint 0 problemas, prettier ✓, vitest 25 ✓, build ✓.
+- **Remoto**: workflow valida em **push real** e **PR real** para `main` (branch + PR de fato, checks verdes no GitHub Actions) + branch protection ativada. Evidência: prints/runs no GitHub.
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -263,3 +280,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 22:5x — Commit+push do T6 (`7169467` docs, `d385474` feat); issue #7 fechada.
 - 23:0x — **T7**: decisões I1–I5 aprovadas (erros inline, gatinho frontal com rabinho atrás, autoscroll+botão, Enter envia, cards no histórico). TDD: 13 testes novos → 24 verdes. Rotas registradas no App (diagnóstico), parser SSE incremental, invalidate no done.
 - 23:1x — E2E real completo (criar conversa → stream "transmitindo▮" capturado → resposta com 3 refs → histórico recarregado); auditorias ui-vision 3x (melhorias I6 aplicadas); flakiness de teste diagnosticada e corrigida (waitFor atômico). Checkpoint aguardando aprovação de commit do T7.
+- 09:0x — **T8**: decisões J1–J3 aprovadas (eslint+prettier, mypy default, branch protection). Backend: mypy instalado e verde (3 erros mecânicos corrigidos: iterador do PyMuPDF + anotação do payload). Frontend: eslint+prettier configurados (flat config, react-hooks/refresh), oxlint removido; refactor do ChatPage (`ChatRoom key={id}`) eliminando setState-em-efeito; prettier normalizou 29 arquivos. 31 testes backend + 25 front + build verdes. Workflow ci.yml escrito. Aguardando aprovação para push/PR/proteção.
