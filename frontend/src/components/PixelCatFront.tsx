@@ -4,7 +4,13 @@ const BODY =
 const TAIL_L = 'M0 8h2v1H0zM0 9h2v1H0zM1 10h2v1H1z'
 const TAIL_R = 'M14 8h2v1H14zM14 9h2v1H14zM13 10h2v1H13z'
 
-export default function PixelCatFront({ size = 36, className = '' }: { size?: number; className?: string }) {
+export default function PixelCatFront({
+  size = 36,
+  className = '',
+}: {
+  size?: number
+  className?: string
+}) {
   return (
     <svg
       width={size}

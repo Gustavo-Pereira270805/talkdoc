@@ -27,7 +27,14 @@ function makeFile(name: string, size = 1024, type = 'application/pdf') {
 const listOf = (docs: unknown[]) => mockedApi.listDocuments.mockResolvedValue(docs as never)
 
 function detailOf(overrides: Partial<api.DocumentDetail>) {
-  return { id: 1, filename: 'contrato.pdf', status: 'ready', page_count: 1, error: null, ...overrides } as api.DocumentDetail
+  return {
+    id: 1,
+    filename: 'contrato.pdf',
+    status: 'ready',
+    page_count: 1,
+    error: null,
+    ...overrides,
+  } as api.DocumentDetail
 }
 
 function gate() {
@@ -110,12 +117,20 @@ describe('UploadPage', () => {
 
   it('upload válido mostra o card processando e depois "Pronto" via polling', async () => {
     mockedApi.listDocuments.mockResolvedValueOnce([])
-    mockedApi.listDocuments.mockResolvedValueOnce([{ id: 1, filename: 'contrato.pdf', status: 'queued' } as api.Document])
-    mockedApi.uploadDocument.mockResolvedValue({ id: 1, filename: 'contrato.pdf', status: 'queued' } as api.Document)
+    mockedApi.listDocuments.mockResolvedValueOnce([
+      { id: 1, filename: 'contrato.pdf', status: 'queued' } as api.Document,
+    ])
+    mockedApi.uploadDocument.mockResolvedValue({
+      id: 1,
+      filename: 'contrato.pdf',
+      status: 'queued',
+    } as api.Document)
     const extracting = gate()
     mockedApi.getDocument
       .mockResolvedValueOnce(detailOf({ status: 'queued' }))
-      .mockImplementationOnce(() => extracting.promise.then(() => detailOf({ status: 'extracting' })))
+      .mockImplementationOnce(() =>
+        extracting.promise.then(() => detailOf({ status: 'extracting' })),
+      )
       .mockResolvedValueOnce(detailOf({ status: 'ready', page_count: 3 }))
     const user = userEvent.setup()
     renderPage()
@@ -136,13 +151,25 @@ describe('UploadPage', () => {
 
   it('falha de processamento aparece no card do documento', async () => {
     mockedApi.listDocuments.mockResolvedValueOnce([])
-    mockedApi.listDocuments.mockResolvedValueOnce([{ id: 1, filename: 'scan.pdf', status: 'queued' } as api.Document])
-    mockedApi.uploadDocument.mockResolvedValue({ id: 1, filename: 'scan.pdf', status: 'queued' } as api.Document)
+    mockedApi.listDocuments.mockResolvedValueOnce([
+      { id: 1, filename: 'scan.pdf', status: 'queued' } as api.Document,
+    ])
+    mockedApi.uploadDocument.mockResolvedValue({
+      id: 1,
+      filename: 'scan.pdf',
+      status: 'queued',
+    } as api.Document)
     const failed = gate()
     mockedApi.getDocument
       .mockResolvedValueOnce(detailOf({ filename: 'scan.pdf', status: 'indexing' }))
       .mockImplementationOnce(() =>
-        failed.promise.then(() => detailOf({ filename: 'scan.pdf', status: 'failed', error: 'PDF escaneado sem texto extraível.' })),
+        failed.promise.then(() =>
+          detailOf({
+            filename: 'scan.pdf',
+            status: 'failed',
+            error: 'PDF escaneado sem texto extraível.',
+          }),
+        ),
       )
     const user = userEvent.setup()
     renderPage()
@@ -164,8 +191,16 @@ describe('UploadPage', () => {
       { id: 3, filename: 'novo.pdf', status: 'extracting' },
     ])
     mockedApi.getDocument
-      .mockResolvedValueOnce(detailOf({ filename: 'relatorio.pdf', status: 'ready', page_count: 5 }))
-      .mockResolvedValueOnce(detailOf({ filename: 'scan.pdf', status: 'failed', error: 'PDF escaneado sem texto extraível.' }))
+      .mockResolvedValueOnce(
+        detailOf({ filename: 'relatorio.pdf', status: 'ready', page_count: 5 }),
+      )
+      .mockResolvedValueOnce(
+        detailOf({
+          filename: 'scan.pdf',
+          status: 'failed',
+          error: 'PDF escaneado sem texto extraível.',
+        }),
+      )
       .mockResolvedValueOnce(detailOf({ filename: 'novo.pdf', status: 'extracting' }))
     renderPage()
 

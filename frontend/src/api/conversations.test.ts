@@ -11,7 +11,9 @@ describe('createSSEParser', () => {
   it('emite eventos na ordem correta mesmo com chunks cortados no meio do evento', () => {
     const { events, push } = collect()
 
-    push('event: references\ndata: {"references": [{"label":"S1","text":"trecho","page":1,"document_id":2,"filename":"a.pdf"}]}\n\n')
+    push(
+      'event: references\ndata: {"references": [{"label":"S1","text":"trecho","page":1,"document_id":2,"filename":"a.pdf"}]}\n\n',
+    )
     push('event: to')
     push('ken\ndata: {"token":"Olá"}\n\nevent: do')
     push('ne\ndata: {}\n\n')

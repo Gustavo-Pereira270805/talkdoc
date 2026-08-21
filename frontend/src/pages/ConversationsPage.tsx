@@ -42,14 +42,18 @@ function NewConversationSelector({ onClose }: { onClose: () => void }) {
       {isLoading ? (
         <p className="text-sm text-fog blink">carregando documentos…</p>
       ) : !ready.length ? (
-        <p className="text-sm text-fog">nenhum documento pronto para conversar — envie um PDF primeiro.</p>
+        <p className="text-sm text-fog">
+          nenhum documento pronto para conversar — envie um PDF primeiro.
+        </p>
       ) : (
         <div className="flex flex-col gap-1.5">
           {ready.map((document) => (
             <label
               key={document.id}
               className={`flex cursor-pointer items-center gap-2 border-2 px-3 py-2 text-sm text-term ${
-                selected.has(document.id) ? 'border-term bg-term/10' : 'border-edge bg-ink hover:border-term'
+                selected.has(document.id)
+                  ? 'border-term bg-term/10'
+                  : 'border-edge bg-ink hover:border-term'
               }`}
             >
               <input
@@ -64,7 +68,10 @@ function NewConversationSelector({ onClose }: { onClose: () => void }) {
         </div>
       )}
       {error && (
-        <p role="alert" className="border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink">
+        <p
+          role="alert"
+          className="border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink"
+        >
           ✕ {error}
         </p>
       )}
@@ -122,11 +129,16 @@ export default function ConversationsPage() {
         {isLoading ? (
           <p className="text-sm text-fog blink">carregando conversas…</p>
         ) : isError ? (
-          <p role="alert" className="inline-block border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink">
+          <p
+            role="alert"
+            className="inline-block border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink"
+          >
             ✕ {error instanceof Error ? error.message : 'Não foi possível carregar as conversas.'}
           </p>
         ) : !conversations?.length ? (
-          <p className="text-sm text-fog">nenhuma conversa ainda — crie uma para perguntar sobre seus PDFs.</p>
+          <p className="text-sm text-fog">
+            nenhuma conversa ainda — crie uma para perguntar sobre seus PDFs.
+          </p>
         ) : (
           <ul className="flex flex-col gap-3">
             {conversations.map((conversation) => (
@@ -135,7 +147,9 @@ export default function ConversationsPage() {
                   href={`/conversas/${conversation.id}`}
                   className="hard-shadow flex items-center justify-between border-2 border-edge bg-panel px-4 py-3 hover:border-term"
                 >
-                  <span className="truncate font-mono font-semibold text-term">{conversation.title}</span>
+                  <span className="truncate font-mono font-semibold text-term">
+                    {conversation.title}
+                  </span>
                   <span className="font-display text-xl text-fog">▸</span>
                 </a>
               </li>

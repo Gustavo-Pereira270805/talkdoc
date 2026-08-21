@@ -41,7 +41,11 @@ export default function UploadForm() {
       if (inputRef.current) inputRef.current.value = ''
       queryClient.invalidateQueries({ queryKey: ['documents'] })
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Não foi possível enviar o arquivo. Tente novamente.')
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : 'Não foi possível enviar o arquivo. Tente novamente.',
+      )
     } finally {
       setUploading(false)
     }
@@ -76,7 +80,10 @@ export default function UploadForm() {
         </button>
       </div>
       {error && (
-        <p role="alert" className="border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink">
+        <p
+          role="alert"
+          className="border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink"
+        >
           ✕ {error}
         </p>
       )}

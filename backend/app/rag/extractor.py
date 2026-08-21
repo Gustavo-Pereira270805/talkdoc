@@ -10,8 +10,9 @@ def extract_pages(pdf_path: str | Path) -> list[PageText]:
     document = pymupdf.open(str(pdf_path))
     try:
         pages: list[PageText] = []
-        for index, page in enumerate(document, start=1):
-            pages.append(PageText(page_number=index, text=page.get_text()))
+        for index in range(len(document)):
+            page = document[index]
+            pages.append(PageText(page_number=index + 1, text=page.get_text()))
         return pages
     finally:
         document.close()

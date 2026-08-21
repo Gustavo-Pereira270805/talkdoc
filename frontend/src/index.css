@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-ink: #0f1419;
@@ -10,8 +10,8 @@
   --color-alarm: #ff4d4d;
   --color-fog: #b0bac4;
 
-  --font-display: "VT323", ui-monospace, monospace;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: 'VT323', ui-monospace, monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 @layer base {

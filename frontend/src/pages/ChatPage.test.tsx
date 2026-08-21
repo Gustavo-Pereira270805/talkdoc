@@ -40,7 +40,9 @@ function historyMessage(overrides: Partial<api.Message>): api.Message {
 }
 
 function renderPage() {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 0 } } })
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: 0 } },
+  })
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={['/conversas/1']}>
@@ -55,7 +57,9 @@ function renderPage() {
 describe('ChatPage', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    mockedApi.listConversations.mockResolvedValue([{ id: 1, title: 'talkdoc.pdf', created_at: '2026-08-20T09:00:00' }])
+    mockedApi.listConversations.mockResolvedValue([
+      { id: 1, title: 'talkdoc.pdf', created_at: '2026-08-20T09:00:00' },
+    ])
   })
 
   it('carrega o histórico da API e renderiza refs em cards', async () => {
@@ -91,7 +95,11 @@ describe('ChatPage', () => {
     await waitFor(() => expect(screen.getByText('Como o TalkDoc responde?')).toBeInTheDocument())
     await waitFor(() => expect(screen.getByText('O TalkDoc responde [S1].')).toBeInTheDocument())
     await waitFor(() => expect(screen.getByText('S1 · talkdoc.pdf · pág. 1')).toBeInTheDocument())
-    expect(mockedApi.chatStream).toHaveBeenCalledWith(1, 'Como o TalkDoc responde?', expect.any(Function))
+    expect(mockedApi.chatStream).toHaveBeenCalledWith(
+      1,
+      'Como o TalkDoc responde?',
+      expect.any(Function),
+    )
   })
 
   it('mostra o rótulo "transmitindo" enquanto o stream está ativo e some ao finalizar', async () => {
