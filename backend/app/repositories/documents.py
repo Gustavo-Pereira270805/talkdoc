@@ -22,5 +22,5 @@ class DocumentRepository:
     def get(self, document_id: int) -> Document | None:
         return self.session.get(Document, document_id)
 
-    def list(self) -> list[Document]:
+    def list_all(self) -> list[Document]:
         return self.session.query(Document).order_by(Document.created_at.desc()).all()

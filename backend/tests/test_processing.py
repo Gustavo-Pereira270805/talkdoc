@@ -32,7 +32,7 @@ class FakeIndexer:
     def __init__(self):
         self.upserts: dict[int, list[tuple[str, int]]] = {}
 
-    def upsert_document(self, document_id: int, chunks, vectors) -> None:
+    def upsert_document(self, document_id: int, chunks, vectors, filename: str) -> None:
         self.upserts[document_id] = [(chunk.text, chunk.page) for chunk in chunks]
 
 

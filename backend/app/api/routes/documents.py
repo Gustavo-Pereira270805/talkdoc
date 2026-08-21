@@ -18,7 +18,7 @@ router = APIRouter(prefix="/documents", tags=["documents"])
 
 @router.get("", response_model=list[DocumentOut])
 def list_documents(db: Session = Depends(get_db)) -> list[DocumentOut]:
-    documents = DocumentRepository(db).list()
+    documents = DocumentRepository(db).list_all()
     return [DocumentOut.model_validate(document) for document in documents]
 
 

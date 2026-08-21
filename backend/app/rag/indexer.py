@@ -5,7 +5,7 @@ from qdrant_client.models import (
     Distance,
     FieldCondition,
     Filter,
-    MatchValue,
+    MatchAny,
     PointStruct,
     VectorParams,
 )
@@ -16,8 +16,19 @@ from app.rag.chunker import Chunk
 
 class IndexerClient(Protocol):
     def upsert_document(
-        self, document_id: int, chunks: list[Chunk], vectors: list[list[float]]
+        self,
+        document_id: int,
+        chunks: list[Chunk],
+        vectors: list[list[float]],
+        filename: str,
     ) -> None: ...
+
+    def search(
+        self,
+        vector: list[float],
+        document_ids: list[int] | None = None,
+        top_k: int = 5,
+    ) -> list[dict]: ...
 
 
 class QdrantIndexer:
@@ -34,7 +45,11 @@ class QdrantIndexer:
             )
 
     def upsert_document(
-        self, document_id: int, chunks: list[Chunk], vectors: list[list[float]]
+        self,
+        document_id: int,
+        chunks: list[Chunk],
+        vectors: list[list[float]],
+        filename: str,
     ) -> None:
         self.ensure_collection()
         points = [
@@ -45,6 +60,7 @@ class QdrantIndexer:
                     "document_id": document_id,
                     "page": chunk.page,
                     "text": chunk.text,
+                    "filename": filename,
                 },
             )
             for idx, (chunk, vector) in enumerate(zip(chunks, vectors, strict=True))
@@ -54,14 +70,14 @@ class QdrantIndexer:
     def search(
         self,
         vector: list[float],
-        document_id: int | None = None,
+        document_ids: list[int] | None = None,
         top_k: int = 5,
     ) -> list[dict]:
         self.ensure_collection()
         query_filter = None
-        if document_id is not None:
+        if document_ids:
             query_filter = Filter(
-                must=[FieldCondition(key="document_id", match=MatchValue(value=document_id))]
+                must=[FieldCondition(key="document_id", match=MatchAny(any=document_ids))]
             )
         results = self.client.query_points(
             collection_name=self.collection,
@@ -76,6 +92,7 @@ class QdrantIndexer:
                 "document_id": (point.payload or {})["document_id"],
                 "page": (point.payload or {})["page"],
                 "text": (point.payload or {})["text"],
+                "filename": (point.payload or {}).get("filename", ""),
             }
             for point in results.points
         ]

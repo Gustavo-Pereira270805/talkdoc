@@ -46,7 +46,7 @@ class ProcessingService:
                 )
             else:
                 vectors = self.embedder.embed_documents([chunk.text for chunk in chunks])
-                self.indexer.upsert_document(document.id, chunks, vectors)
+                self.indexer.upsert_document(document.id, chunks, vectors, document.filename)
                 document.status = DocumentStatus.READY.value
                 document.error = None
             self.repository.session.commit()

@@ -161,6 +161,22 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - Docker (chave real): upload `rag.pdf` → `ready` (page_count 3); coleção `chunks` com 3 pontos, dim 768, cosseno; payloads `document_id:7` + `page:1..3` + texto (via scroll REST do Qdrant).
 - Detalhes do caminho: chave inicial era token OAuth (`AQ.`) → trocada por API key (`AIzaSy`, 39 chars); aspas simples no `.env` são removidas pelo Compose (valor correto no container); `ListModels` revelou modelos disponíveis.
 
+## Execução — T5: Chat RAG com SSE
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| F1 | Threshold de similaridade **0.3** (configurável via `.env`) | Equilíbrio para embeddings Gemini; descarta lixo sem perder trechos úteis | **usuário** |
+| F2 | Zero resultados acima do threshold → **LLM com contexto vazio** (diz "não sei") | US9 explícita: admitir ausência em vez de inventar | **usuário** |
+| F3 | Modelo de chat **`openai/gpt-oss-120b`** (configurável) | Llama 3.3 70B **não disponível no free tier** da conta (ListModels confirmou); gpt-oss-120b é o mais forte dos 13 disponíveis; `qwen/qwen3.6-27b` como alternativa | agente (vetável) |
+| F4 | SSE: `event: references` (JSON) → `event: token`… → `event: done`; falhas → `event: error` com mensagem limpa | Decisão A17; refs sobrevivem a stream cortado; erros compreensíveis (US10) | agente (vetável) |
+| F5 | Persistência só **no fim do stream** (user + assistant com refs) | Nada parcial se a conexão cortar | agente (vetável) |
+| F6 | `embed_query` (taskType RETRIEVAL_QUERY) no Protocol; `search` por **vários document_ids** (MatchAny); `filename` no payload do upsert | Query embedding ≠ doc embedding; multi-documento (A9); refs mostram o nome do arquivo | agente (vetável) |
+| F7 | **Lição de processo**: T5 implementado antes dos testes (violação do TDD) — reconhecido pelo usuário; bug real pego após: método `list` fazendo sombra ao builtin (`list[dict]` quebrou no import) → renomeado para `list_all` | TDD estrito retomado a partir do T6 | agente + **usuário** |
+
+**Verificação (aceite do T5):**
+- 31 testes passando + ruff limpo.
+- Docker (chave real): upload talkdoc.pdf → ready; conversa criada (título = nome do arquivo); chat SSE real: `references` (S1, página 1, filename), ~30 eventos `token` (streaming GPT-OSS-120B), `done`; resposta fundamentada citando [S1]; mensagens persistidas (user + assistant com 1 ref).
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -189,3 +205,6 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 19:3x — Commit+push do T3 (`402e6d8`); issue #4 fechada.
 - 19:5x — **T4**: usuário escolheu cosseno + failed com motivo. EmbedderClient (Protocol) + GeminiEmbedder (header auth), QdrantIndexer (coleção 768/cosseno, upsert com payload, search filtrado), lifespan no boot, fakes nos testes. Incidente de segurança: chave vazou em URL de erro → corrigido (header + erro limpo), usuário orientado a rotacionar. Chave inicial (AQ.) inválida; nova (AIzaSy) com aspas no .env (Compose resolve). `text-embedding-004` indisponível na conta → `gemini-embedding-001` (768).
 - 20:0x — Validação Docker: rag.pdf → ready; Qdrant com 3 pontos (doc 7, páginas 1-3, payload ok). Decisões E1–E7 registradas.
+- 20:1x — Commit+push do T4 (`1b0bd13`); issue #5 fechada. Nova chave Gemini (formato AQ., 53 chars) testada: válida via header; gemini-embedding-001 confirmado; fluxo completo ready.
+- 20:3x — **T5**: usuário escolheu threshold 0.3 + contexto vazio→"não sei". Implementação (GroqLLM, prompts, retriever, ChatService, rotas SSE, repositories). **Violação de TDD reconhecida** (código antes dos testes) + bug de shadowing `list` corrigido (`list_all`). Groq: Llama 3.3 70B indisponível → `openai/gpt-oss-120b`.
+- 20:5x — Validação Docker: chat SSE real (references S1 → tokens → done, resposta citando [S1]); mensagens persistidas. Decisões F1–F7 registradas; TDD estrito retomado a partir do T6.

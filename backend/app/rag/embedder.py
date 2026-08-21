@@ -8,6 +8,8 @@ from app.core.config import settings
 class EmbedderClient(Protocol):
     def embed_documents(self, texts: list[str]) -> list[list[float]]: ...
 
+    def embed_query(self, text: str) -> list[float]: ...
+
 
 class GeminiEmbedder:
     BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
@@ -23,7 +25,7 @@ class GeminiEmbedder:
         self.model = model
         self.dimension = dimension
 
-    def _embed_batch(self, texts: list[str]) -> list[list[float]]:
+    def _embed(self, texts: list[str], task_type: str) -> list[list[float]]:
         if not self.api_key:
             raise RuntimeError("GEMINI_API_KEY não configurada.")
         requests = []
@@ -31,7 +33,7 @@ class GeminiEmbedder:
             request = {
                 "model": f"models/{self.model}",
                 "content": {"parts": [{"text": text}]},
-                "taskType": "RETRIEVAL_DOCUMENT",
+                "taskType": task_type,
             }
             if self.dimension is not None:
                 request["outputDimensionality"] = self.dimension
@@ -58,8 +60,12 @@ class GeminiEmbedder:
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         vectors: list[list[float]] = []
         for start in range(0, len(texts), self.BATCH_SIZE):
-            vectors.extend(self._embed_batch(texts[start : start + self.BATCH_SIZE]))
+            batch = texts[start : start + self.BATCH_SIZE]
+            vectors.extend(self._embed(batch, "RETRIEVAL_DOCUMENT"))
         return vectors
+
+    def embed_query(self, text: str) -> list[float]:
+        return self._embed([text], "RETRIEVAL_QUERY")[0]
 
 
 def build_embedder() -> EmbedderClient:
