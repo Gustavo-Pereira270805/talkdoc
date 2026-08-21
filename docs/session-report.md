@@ -237,7 +237,9 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 
 **Verificação (aceite do T8):**
 - **Local (pré-push)**: backend — mypy `Success: no issues found in 28 source files`, ruff ✓, pytest 31 ✓. Frontend — eslint 0 problemas, prettier ✓, vitest 25 ✓, build ✓.
-- **Remoto**: workflow valida em **push real** e **PR real** para `main` (branch + PR de fato, checks verdes no GitHub Actions) + branch protection ativada. Evidência: prints/runs no GitHub.
+- **Remoto — push e PR validados**: PR #12 (branch `feat/t8-ci`) com os 2 checks verdes (backend 40s, frontend 17s) → branch protection ativada em `main` (required checks `backend (ruff, mypy, pytest)` + `frontend (eslint, prettier, vitest, build)`, strict, sem force-push/delete) → merge do PR via caminho protegido → run de `push` em `main` verde (run 32535485245).
+- **Teste negativo (prova do bloqueio)**: PR #13 com teste que falha de propósito → check backend FAIL → `gh pr merge` **recusado** (só com `--auto` esperaria, ou `--admin` forçaria) → PR fechado, branch deletada.
+- Evidência: `evidence/t8-ci-evidence.txt` (runs, proteção, bloqueio).
 
 ## Registro da sessão
 
@@ -281,3 +283,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 23:0x — **T7**: decisões I1–I5 aprovadas (erros inline, gatinho frontal com rabinho atrás, autoscroll+botão, Enter envia, cards no histórico). TDD: 13 testes novos → 24 verdes. Rotas registradas no App (diagnóstico), parser SSE incremental, invalidate no done.
 - 23:1x — E2E real completo (criar conversa → stream "transmitindo▮" capturado → resposta com 3 refs → histórico recarregado); auditorias ui-vision 3x (melhorias I6 aplicadas); flakiness de teste diagnosticada e corrigida (waitFor atômico). Checkpoint aguardando aprovação de commit do T7.
 - 09:0x — **T8**: decisões J1–J3 aprovadas (eslint+prettier, mypy default, branch protection). Backend: mypy instalado e verde (3 erros mecânicos corrigidos: iterador do PyMuPDF + anotação do payload). Frontend: eslint+prettier configurados (flat config, react-hooks/refresh), oxlint removido; refactor do ChatPage (`ChatRoom key={id}`) eliminando setState-em-efeito; prettier normalizou 29 arquivos. 31 testes backend + 25 front + build verdes. Workflow ci.yml escrito. Aguardando aprovação para push/PR/proteção.
+- 09:1x — Branch `feat/t8-ci` + PR #12 (checks verdes: backend 40s, frontend 17s); bump das actions (v5/v6 — Node 20 deprecado). Branch protection ativada em `main` (required checks, strict). Merge do PR #12 → run de push em main verde (32535485245). **Teste negativo**: PR #13 com teste que falha → check FAIL → merge recusado pelo gh → PR fechado. Evidência em `evidence/t8-ci-evidence.txt`. Aguardando aprovação para fechar a issue #9.

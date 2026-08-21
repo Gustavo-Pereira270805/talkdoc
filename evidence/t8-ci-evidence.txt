@@ -1,0 +1,13 @@
+=== T8 - Evidencia CI (gh CLI) ===
+
+-- Runs recentes --
+2026-08-21T23:05:57Z [pull_request] T8: teste negativo temporario: completed/failure
+2026-08-21T23:03:57Z [push] Merge pull request #12 from Gustavo-Pereira270805/feat/t8-ci: completed/success
+2026-08-21T22:55:11Z [pull_request] T8: CI no GitHub Actions: completed/success
+2026-08-21T22:53:44Z [pull_request] T8: CI no GitHub Actions: completed/success
+
+-- Branch protection em main --
+true
+
+-- PR #13 (negativo): merge bloqueado - gh pr merge recusou sem --admin --
+backend check: FAIL (teste deliberado) + gh pr merge 13 --merge -> recusado (sugeriu --auto/--admin)

@@ -20,20 +20,21 @@
 - ✅ T1–T5 (commits `d1a496f`→`22c5051`) — fundação, upload, processamento, embeddings+Qdrant, chat SSE backend
 - ✅ T6 (#7 fechada) — frontend upload/status/erros + tema terminal + gatinho pixel (`7169467` docs, `d385474` feat)
 - ✅ T7 (#8 fechada) — frontend conversas/chat/refs (`87e2b96` docs, `2e30b04` feat)
-- 🔜 **T8 (#9) CI**, T9 (#10) imagens prod + clone limpo, T10 (#11) README/screenshots/colaboradores
+- ✅ T8 (#9) — CI no GitHub Actions: workflow `.github/workflows/ci.yml` (push+PR, 2 jobs: backend ruff/mypy/pytest + frontend eslint/prettier/vitest/build), eslint+prettier (J1), mypy (J2), **branch protection em `main`** (J3, required checks, strict) — PR #12 merged, teste negativo PR #13 provou bloqueio. Decisões J1–J8 no report
+- 🔜 **T9 (#10) imagens prod + clone limpo**, T10 (#11) README/screenshots/colaboradores
 
-## T8 — próximo passo exato
+## T9 — próximo passo exato
 
-Issue #9 (ver no GitHub com `gh issue view 9`): CI. Proposta de trabalho (a validar com a usuária — **todas as decisões principais passam por ela**):
-1. Apresentar brief + decisões: provider (GitHub Actions vs outro), gatilho (push/PR), jobs (backend: pytest+ruff em container; frontend: vitest+build+lint; opcional: build das imagens Docker e push pro GHCR)
-2. Executar com TDD quando aplicável (CI em si é config; testes unitários novos se necessário)
-3. Validar: rodar o pipeline em branch/PR real, evidência no GitHub Actions
-4. Registrar decisões no `docs/session-report.md` + checkpoint + aprovação de commit
+Issue #10 (ver no GitHub com `gh issue view 10`). Contexto: desafio exige `docker compose up` reproduzível a partir de clone limpo (já parcialmente coberto no T1/B7); T9 valida as **imagens de produção** (build `docker compose build` + boot completo com dados zerados) e o **clone limpo** (instruções de setup, `.env.example`, portas). Proposta de trabalho (validar com a usuária):
+1. Brief + decisões (escopo: build+up com volumes zerados, validação E2E no :8080, docs de setup no README?)
+2. Executar com validação real no Docker (reset total + compose up + E2E)
+3. Evidência + relatório + checkpoint + aprovação de commit/PR
 
 ## Estado do repositório
 
-- `main` com T1–T7. Working tree: limpo (git status sem pendências). Containers Docker rodando (qdrant healthy, backend, frontend).
-- **Pendência de segurança**: rotacionar `GEMINI_API_KEY` no Google AI Studio (exposta em 2 incidentes históricos: URL de erro no T4 e dado velho na UI no T6 — ambos já sanitizados no código/banco). A chave atual ainda funciona.
+- `main` com T1–T8. **Branch protection ativa**: em `main` só entra por PR com os 2 checks verdes (sem push direto!). Working tree: limpo.
+- Containers Docker rodando (qdrant healthy, backend healthy, frontend up).
+- **Pendência de segurança**: rotacionar `GEMINI_API_KEY` no Google AI Studio (exposta em 2 incidentes históricos — já sanitizados). A chave atual ainda funciona.
 - **Skills globais instaladas**: `no-ai-slop` (texto/README), `pixel-art-sprites`, além das do repo.
 
 ## Ambiente e comandos
