@@ -41,9 +41,10 @@ Fluxo de planejamento: `/grill-with-docs` → `/to-spec` → `/to-tickets` (→ 
 
 Abordagem **mista com decisões focalizadas + checkpoints visuais**, nível **imersivo**.
 
-- **Ritmo por ticket**: brief (o que/por quê/como validar) → decisões focalizadas (máx. 2-3 perguntas com opções + recomendação) → execução TDD → checkpoint visual/evidência → aprovação do usuário antes de qualquer commit/push.
+- **Todas as decisões principais passam pelo usuário** (arquitetura, providers, libs, schema, UX/comportamento, escopo/ordem, infra). Apresentação em lote com opções + recomendação marcada para aprovação/veto rápidos (máx. 2-3 blocos por ticket).
+- **Decisões mecânicas** (nomenclatura, estrutura interna de teste, estilo, valores triviais) o agente decide e registra como "vetável" — o usuário pode derrubá-las depois lendo o relatório.
+- **Ritmo por ticket**: brief (o que/por quê/como validar) → decisões principais (aprovação do usuário) → execução TDD **red-green estrito** (teste primeiro) → checkpoint visual/evidência → aprovação do usuário antes de qualquer commit/push.
 - **Nunca** commitar ou dar push sem permissão explícita do usuário.
-- O usuário tem voz ativa em **backend/arquitetura** e **UX/comportamento**; decisões nessas áreas devem ser consultadas nos pontos-chave. Mecânica de implementação (libs internas, detalhes de teste) o agente decide e registra.
 - Nível imersivo: em tickets de backend, explicar o código ao usuário em tempo real (pair programming guiado), sem jargão desnecessário; porquês de 1-2 linhas em português.
 - Toda decisão é registrada em `docs/session-report.md` (tabela de decisões + log), marcando "decidido pelo usuário" vs "decidido pelo agente (vetável)".
 - Checkpoint: mostrar evidência (screenshot auditada pelo `ui-vision` em frontend; testes/curl em backend) e atualizar issues e relatório.

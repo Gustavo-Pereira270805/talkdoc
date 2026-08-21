@@ -177,6 +177,29 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 31 testes passando + ruff limpo.
 - Docker (chave real): upload talkdoc.pdf → ready; conversa criada (título = nome do arquivo); chat SSE real: `references` (S1, página 1, filename), ~30 eventos `token` (streaming GPT-OSS-120B), `done`; resposta fundamentada citando [S1]; mensagens persistidas (user + assistant com 1 ref).
 
+## Execução — T6: Frontend upload, status e erros (CONCLUÍDO — implementação + tema)
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| G1 | **Página única**: formulário de upload no topo + lista de documentos abaixo | Tudo visível, polling natural, sem navegação extra | **usuário** |
+| G2 | **Card por documento com badge de status** (na fila/extraindo/indexando/pronto/falhou) + **animação CSS/HTML** no processamento | Reflete os estados reais do backend (US2/US4); animação dá feedback visual sem percentual falso | **usuário** |
+| G3 | Erros **inline**: no formulário (upload inválido) e no card (falha de processamento) | Contextual e simples; sem componente de toast | **usuário** |
+| H1 | **Tema terminal escuro**: fundo `#0f1419`, verde fósforo `#33ff66` (sucesso), âmbar `#ffb000` (fila), ciano `#33ccff` (processando), vermelho `#ff4d4d` (erro), texto secundário `#8b949e` | Aprovado entre 3 paletas; contraste alto, legível, autêntico terminal | **usuário** |
+| H2 | Fontes **VT323** (títulos/badges/display) + **IBM Plex Mono** (corpo) | VT323 é display (cansa em texto longo); Plex Mono preserva legibilidade | **usuário** |
+| H3 | **Mascote gatinho pixel** (SVG 18x16 desenhado à mão, 22 pixels, `shape-rendering: crispEdges`) no header + favicon | Identidade própria, zero "cara de IA" | **usuário** |
+| H4 | Detalhes do tema: bordas sólidas 2px, **sombra dura 4px offset** (sem blur), botão com efeito *pressed* (translate), badges sólidos com texto escuro, `blink` animado respeitando `prefers-reduced-motion`, ">" decorativo fora do `<label>` (acessibilidade), erros com `✕` + truncamento | Diretriz "sem gradiente/sem AI-slop" do usuário | agente (vetável) |
+| H5 | Sanitização de erros no front (`formatError`): **mascarar `key=`/`token=` em URLs + truncar a ~140 chars** | Incidente real: card exibia URL do provider com chave `AQ.…` (dado velho do T4, persistido no banco) — defesa em profundidade + limpeza do registro (doc 5 rag.pdf) | agente (vetável) + incidente |
+| H6 | Skills instaladas: `petergyang/no-ai-slop` (revisão de texto/copy anti-AI-slop, p/ T10/README) + `omer-metin/pixel-art-sprites` (princípios de pixel art) | Pesquisa a pedido do usuário; no-ai-slop 6.5K instalações, fonte confiável | agente (vetável) |
+| H7 | **Gatinho de corpo inteiro** (vista lateral sentado, grid 24x20, olhos como "buracos" no tema terminal) substituindo o rosto 18x16 que parecia coração; **rabo com animação `wag` contínua** (0.7s, ±16°, `transform-box: fill-box`, pausa com `prefers-reduced-motion`); posicionado **em pé sobre a barra** do formulário (base sobreposta 2px na borda, `z-10`); favicon atualizado; **ponte de pixels na raiz do rabo** (correção da auditoria — rabo "voador") | Pedido explícito da usuária ("corpo inteiro, simples, rabo mexendo sempre, em pé na barra da caixa de chat"); padrão reutilizável no T7 (chat box) | **usuário** + correção agente (vetável) |
+| H8 | Automação do E2E sem processos órfãos: comando único com `try/finally` (sobe o dev server, captura, mata por porta). Proposta p/ T9: Playwright Test `webServer` (start/kill automático) | Feedback da usuária sobre processos que não encerram sozinhos | agente (vetável) |
+
+**Verificação (aceite do T6):**
+- **TDD red-green estrito**: 7 testes da página escritos primeiro (red) → implementação → 10 verdes (7 página + 3 `formatError`). Build + oxlint limpos.
+- **Debug notável** (não é defeito do produto, é teste): `user.upload` do Testing Library não seta `File` no input (React 19) → `fireEvent.change`; fake timers incompatíveis com `waitFor` do dom 10.4 (só detecta `jest`) → intervalos via `POLL_OPTIONS.intervalMs` mutável; `mockResolvedValueOnce` tem prioridade sobre o persistente (consumido na 1ª chamada) → fila de once-impls encadeada.
+- **Docker/E2E real** (Playwright + Chrome): fluxo completo — lista inicial com badges, seleção de arquivo, upload real (202), card processando (badge ciano + blink), transição para "Pronto" via polling (2s) com contagem de páginas. Evidências: `evidence/t6-1..t6-4-*.png`.
+- **Auditoria ui-vision** (2 rodadas): 0 problemas críticos; médios (feedback não-só-cor, foco `:focus-visible` global, contraste badges) → **corrigidos** no tema; **incidente de chave na UI identificado pela auditoria** → sanitizado + banco limpo (doc 5, rag.pdf) + registro estranho de teste removido (doc 2).
+- **Recomendação ao usuário**: rotacionar a GEMINI_API_KEY (exposta em 2 incidentes: T4 via URL de erro e T6 via dado velho na UI).
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -208,3 +231,10 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 20:1x — Commit+push do T4 (`1b0bd13`); issue #5 fechada. Nova chave Gemini (formato AQ., 53 chars) testada: válida via header; gemini-embedding-001 confirmado; fluxo completo ready.
 - 20:3x — **T5**: usuário escolheu threshold 0.3 + contexto vazio→"não sei". Implementação (GroqLLM, prompts, retriever, ChatService, rotas SSE, repositories). **Violação de TDD reconhecida** (código antes dos testes) + bug de shadowing `list` corrigido (`list_all`). Groq: Llama 3.3 70B indisponível → `openai/gpt-oss-120b`.
 - 20:5x — Validação Docker: chat SSE real (references S1 → tokens → done, resposta citando [S1]); mensagens persistidas. Decisões F1–F7 registradas; TDD estrito retomado a partir do T6.
+- 21:0x — Commit+push do T5 (`22c5051`); issue #6 fechada.
+- 21:1x — Acordo de trabalho atualizado: **todas as decisões principais passam pelo usuário** (lote + recomendação; mecânicas ficam "vetáveis"). T6: decisões G1–G3 aprovadas (página única, card+badge+animação CSS, erros inline). **Sessão compactada** — handoff em `docs/handoff.md`.
+- 22:0x — **Retomada pós-compactação**: T6 implementado com TDD red-green estrito (7 testes primeiro). Deps front instaladas (TanStack Query, react-router-dom, Vitest+Testing Library). Debug de testes: `user.upload`/fake timers/once-impls (registrado).
+- 22:1x — Validação Docker + Playwright E2E real (upload→processando→pronto, polling 2s). Auditoria ui-vision: tema aprovado pela usuária (H1–H3: terminal escuro, VT323+Plex Mono, gatinho pixel); skills anti-slop instaladas.
+- 22:2x — **Incidente de segurança detectado pela auditoria**: card rag.pdf exibia URL do provider com chave `AQ.…` (dado velho persistido no T4) → sanitização `formatError` no front (mask `key=` + truncar), limpeza do banco (docs 5 e 2), recomendação de rotação da chave. 10 testes verdes, build/lint limpos. Checkpoint aguardando aprovação de commit do T6.
+- 22:3x — **Redesign do gatinho** (H7): corpo inteiro 24x20 + rabo com wag contínuo + em pé na barra do formulário; auditoria ui-vision (2 rodadas) aprovou; E2E sem órfãos (H8, try/finally). Container prod sincronizado. Aguardando aprovação de commit do T6 + rotação da chave.
+- 22:4x — Ajuste fino do gatinho (pedido da usuária): **base/pernas estreitada** (20px→14px, taper natural do corpo sentado); auditoria aprovou (proporção cabeça:corpo:base ~40:50:10). 10 testes ✓, build/lint ✓, prod sincronizado. Aguardando aprovação de commit do T6.
