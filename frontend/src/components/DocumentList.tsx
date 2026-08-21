@@ -47,7 +47,10 @@ export default function DocumentList() {
   }
   if (isError) {
     return (
-      <p role="alert" className="inline-block border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink">
+      <p
+        role="alert"
+        className="inline-block border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold text-ink"
+      >
         ✕ Não foi possível carregar a lista de documentos.
       </p>
     )

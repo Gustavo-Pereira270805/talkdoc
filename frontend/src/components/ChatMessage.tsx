@@ -37,7 +37,10 @@ export default function ChatMessage({ message }: { message: Message }) {
 export function ErrorMessage({ message }: { message: string }) {
   return (
     <div className="flex justify-start">
-      <p role="alert" className="max-w-[85%] border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold leading-relaxed text-ink">
+      <p
+        role="alert"
+        className="max-w-[85%] border-2 border-black bg-alarm px-3 py-2 text-sm font-semibold leading-relaxed text-ink"
+      >
         ✕ {formatError(message)}
       </p>
     </div>

@@ -30,7 +30,7 @@ class GeminiEmbedder:
             raise RuntimeError("GEMINI_API_KEY não configurada.")
         requests = []
         for text in texts:
-            request = {
+            request: dict[str, object] = {
                 "model": f"models/{self.model}",
                 "content": {"parts": [{"text": text}]},
                 "taskType": task_type,

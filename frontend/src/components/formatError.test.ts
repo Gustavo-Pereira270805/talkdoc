@@ -16,6 +16,8 @@ describe('formatError', () => {
   })
 
   it('preserva mensagens curtas e limpas', () => {
-    expect(formatError('PDF escaneado sem texto extraível.')).toBe('PDF escaneado sem texto extraível.')
+    expect(formatError('PDF escaneado sem texto extraível.')).toBe(
+      'PDF escaneado sem texto extraível.',
+    )
   })
 })

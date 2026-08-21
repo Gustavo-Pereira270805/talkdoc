@@ -31,7 +31,9 @@ const mockedApi = vi.mocked(api, true)
 const mockedDocApi = vi.mocked(docApi, true)
 
 function renderPage() {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 0 } } })
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: 0 } },
+  })
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
@@ -80,7 +82,11 @@ describe('ConversationsPage', () => {
       { id: 1, filename: 'a.pdf', status: 'ready' },
       { id: 2, filename: 'b.pdf', status: 'ready' },
     ])
-    mockedApi.createConversation.mockResolvedValue({ id: 3, title: 'b.pdf', created_at: '2026-08-20T12:00:00' })
+    mockedApi.createConversation.mockResolvedValue({
+      id: 3,
+      title: 'b.pdf',
+      created_at: '2026-08-20T12:00:00',
+    })
     const user = userEvent.setup()
     renderPage()
 

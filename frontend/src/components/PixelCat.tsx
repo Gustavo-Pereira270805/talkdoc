@@ -4,7 +4,13 @@ const BODY =
 const TAIL =
   'M20 9h2v1H20zM19 10h3v1H19zM19 11h2v1H19zM18 12h2v1H18zM16 12h2v1H16zM18 13h2v1H18zM16 13h2v1H16z'
 
-export default function PixelCat({ size = 48, className = '' }: { size?: number; className?: string }) {
+export default function PixelCat({
+  size = 48,
+  className = '',
+}: {
+  size?: number
+  className?: string
+}) {
   return (
     <svg
       width={size}

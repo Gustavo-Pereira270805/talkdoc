@@ -16,7 +16,10 @@ interface StreamState {
 
 export default function ChatPage() {
   const { id } = useParams()
-  const conversationId = Number(id)
+  return <ChatRoom key={id} conversationId={Number(id)} />
+}
+
+function ChatRoom({ conversationId }: { conversationId: number }) {
   const queryClient = useQueryClient()
   const { data: conversations } = useConversations()
   const { data: history, isLoading } = useConversationMessages(conversationId)
@@ -29,12 +32,6 @@ export default function ChatPage() {
   const atBottomRef = useRef(true)
 
   const conversation = conversations?.find((item) => item.id === conversationId)
-
-  useEffect(() => {
-    setStream({ text: '', refs: [], error: null })
-    setPending(null)
-    setStreaming(false)
-  }, [conversationId])
 
   useEffect(() => {
     const scroller = scrollerRef.current
@@ -62,7 +59,13 @@ export default function ChatPage() {
   }
 
   async function handleSubmit(question: string) {
-    setPending({ id: 0, role: 'user', content: question, refs: null, created_at: new Date().toISOString() })
+    setPending({
+      id: 0,
+      role: 'user',
+      content: question,
+      refs: null,
+      created_at: new Date().toISOString(),
+    })
     setStream({ text: '', refs: [], error: null })
     streamRef.current = { text: '', refs: [], error: null }
     setStreaming(true)
@@ -130,7 +133,9 @@ export default function ChatPage() {
             {isLoading ? (
               <p className="text-sm text-fog blink">carregando mensagens…</p>
             ) : historyMessages.length === 0 && !pending && !stream.text && !stream.error ? (
-              <p className="text-sm text-fog">nenhuma mensagem ainda — pergunte algo sobre os documentos.</p>
+              <p className="text-sm text-fog">
+                nenhuma mensagem ainda — pergunte algo sobre os documentos.
+              </p>
             ) : (
               <>
                 {historyMessages.map((message) => (
