@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import ChatPage from './pages/ChatPage'
+import ConversationsPage from './pages/ConversationsPage'
 import UploadPage from './pages/UploadPage'
 
 const queryClient = new QueryClient({
@@ -14,6 +16,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<UploadPage />} />
+          <Route path="/conversas" element={<ConversationsPage />} />
+          <Route path="/conversas/:id" element={<ChatPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

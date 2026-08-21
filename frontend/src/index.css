@@ -8,7 +8,7 @@
   --color-amber: #ffb000;
   --color-cyanx: #33ccff;
   --color-alarm: #ff4d4d;
-  --color-fog: #8b949e;
+  --color-fog: #b0bac4;
 
   --font-display: "VT323", ui-monospace, monospace;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -72,11 +72,43 @@
   animation: wag 0.7s linear infinite;
 }
 
+@keyframes tail-swap-l {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes tail-swap-r {
+  0%,
+  45% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.tail-l {
+  animation: tail-swap-l 0.8s linear infinite;
+}
+
+.tail-r {
+  animation: tail-swap-r 0.8s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .blink,
   .animate-ping,
   .animate-pulse,
-  .cat-tail {
+  .cat-tail,
+  .tail-l,
+  .tail-r {
     animation: none;
   }
 }

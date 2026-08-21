@@ -10,7 +10,7 @@ export default function PixelCat({ size = 48, className = '' }: { size?: number;
       width={size}
       height={(size * 20) / 24}
       viewBox="0 0 24 20"
-      shape-rendering="crispEdges"
+      shapeRendering="crispEdges"
       aria-hidden="true"
       className={`pointer-events-none shrink-0 ${className}`}
     >
