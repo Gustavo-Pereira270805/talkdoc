@@ -22,19 +22,19 @@
 - ✅ T3 (#4 fechada) — processamento background (PyMuPDF, chunker 800 tokens/15% overlap, status), commit `402e6d8`
 - ✅ T4 (#5 fechada) — embeddings Gemini + indexação Qdrant, commit `1b0bd13`
 - ✅ T5 (#6 fechada) — chat RAG com SSE (Groq streaming, refs S1..S5, persistência), commit `22c5051`
-- ⏳ **T6 (#7)** — Frontend upload/status/erros: **implementado + tema** (ver "T6 — estado atual" abaixo); **aguardando aprovação de commit**
-- 🔜 T7 (#8) frontend conversas/chat, T8 (#9) CI, T9 (#10) imagens prod + clone limpo, T10 (#11) README/screenshots/colaboradores
+- ⏳ **T6 (#7)** — Frontend upload/status/erros: **commitado** (`7169467` docs, `d385474` feat), issue fechada
+- ⏳ **T7 (#8)** — Frontend conversas/chat: **implementado e validado** (decisões I1–I9 no report); **aguardando aprovação de commit**
+- 🔜 T8 (#9) CI, T9 (#10) imagens prod + clone limpo, T10 (#11) README/screenshots/colaboradores
 
-## T6 — estado atual (retomada pós-compactação)
+## T7 — estado atual
 
-**Tudo implementado e validado** (decisões G1–G3 + H1–H6 no `session-report.md`):
-- Página única (UploadPage) com tema **terminal escuro + gatinho pixel** (VT323 + IBM Plex Mono, favicon novo, `PixelCat` SVG, `@theme` Tailwind v4 em `index.css` com `blink`/`hard-shadow` respeitando reduced-motion)
-- `src/api/documents.ts` (ApiError + request com detail), `src/hooks/useDocuments.ts` (**POLL_OPTIONS.intervalMs** mutável para testes, polling 2s via refetchInterval), `UploadForm`, `DocumentList`/`DocumentCard`/`StatusBadge`, `formatError` (mascara `key=`/`token=` + trunca 140 chars)
-- Router (react-router, rota `/`) + QueryClientProvider em `App.tsx`; proxy Vite → :8000; Vitest+Testing Library configurado (globals, jsdom); 10 testes verdes, build+lint limpos
-- E2E Playwright real validado (upload→processando→pronto); auditoria ui-vision 2x; **incidente de chave na UI sanitizado** (doc 5 rag.pdf + doc 2 removidos do banco)
-- NÃO commitado: tudo do front + report/handoff/AGENTS + evidence/ (pedir permissão; bloco de infra separado se preferir)
-- **Recomendação forte: rotacionar GEMINI_API_KEY** (exposta em 2 incidentes)
-- Skills novas instaladas (globais): `no-ai-slop`, `pixel-art-sprites`
+**Tudo implementado e validado** (decisões I1–I9 no `session-report.md`):
+- `src/api/conversations.ts` (CRUD + **parser SSE incremental** com `fetch`/ReadableStream: CRLF, comentários, chunks cortados) + hooks `useConversations.ts`
+- Páginas `ConversationsPage` (lista + seletor de docs com checkboxes) e `ChatPage` (histórico, stream token a token, **"transmitindo▮"** + gatinho frontal "pensando", refs S1..S5 em cards âmbar expandíveis, autoscroll + botão, erros inline); rotas em `App.tsx`
+- `PixelCatFront` (gatinho frontal 18x14, rabinho atrás alternando lados) + `ChatInput` + `ChatMessage`/`RefCard`
+- 24 testes verdes (13 novos), build+lint ok; E2E real validado (evidências `evidence/t7-*.png`, auditoria ui-vision 3x)
+- NÃO commitado: frontend do T7 + report/handoff (pedir permissão; docs em commit separado como no T6)
+- **Recomendação: rotacionar GEMINI_API_KEY** (2 incidentes) — ainda pendente
 
 ## Ambiente e comandos
 

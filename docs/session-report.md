@@ -200,6 +200,28 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - **Auditoria ui-vision** (2 rodadas): 0 problemas críticos; médios (feedback não-só-cor, foco `:focus-visible` global, contraste badges) → **corrigidos** no tema; **incidente de chave na UI identificado pela auditoria** → sanitizado + banco limpo (doc 5, rag.pdf) + registro estranho de teste removido (doc 2).
 - **Recomendação ao usuário**: rotacionar a GEMINI_API_KEY (exposta em 2 incidentes: T4 via URL de erro e T6 via dado velho na UI).
 
+## Execução — T7: Frontend conversas, chat e referências
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| I1 | Erros do chat **inline no balão** (vermelho, com ✕) | Contextual, sem componente novo de toast | **usuário** |
+| I2 | Indicador "pensando" = **gatinho frontal sentado** (sprite 18x14, novo, delicado) com **rabinho atrás do corpo** — nubs laterais alternando (tail-swap 0.8s, `prefers-reduced-motion` respeitado) + texto "pensando…" | Pedido explícito; sprite frontal distinto do lateral (upload) | **usuário** |
+| I3 | **Autoscroll automático** + botão "PULAR PARA O FIM ▾" quando o usuário rola para cima | Não perder contexto nem forçar leitura | **usuário** |
+| I4 | **Enter envia**, Shift+Enter quebra linha, botão "ENVIAR ▸" como alternativa | Perguntas frequentes sem mouse | **usuário** |
+| I5 | Refs de mensagens salvas renderizam nos **mesmos cards expandíveis** (S1..S5) | Consistência entre histórico e resposta nova | **usuário** |
+| I6 | Rótulo **"transmitindo▮"** (cursor blink) + `aria-live="polite"` durante o stream; texto secundário `#b0bac4` (contraste AA); checkbox com borda verde quando selecionado; trecho expandido em `text-sm` | 3 melhorias prioritárias da auditoria ui-vision | agente (vetável) |
+| I7 | Parser SSE incremental próprio (`fetch` + ReadableStream): normaliza CRLF, ignora comentários keep-alive, data multi-linha, chunks cortados no meio do evento | EventSource não suporta POST; testado unitariamente (5 casos) | agente (vetável) |
+| I8 | No `done` do stream: **invalidate da query de mensagens** → histórico persistido recarrega da API (user+assistant com refs) | AC "histórico recarregado da API" | agente (vetável) |
+| I9 | Nav terminal no header ("&gt; documentos / conversas"), título da conversa resolvido pela lista | Coerência com o tema; backend já define título | agente (vetável) |
+
+**Verificação (aceite do T7):**
+- **TDD red-green estrito**: 13 testes novos escritos primeiro (5 parser SSE, 5 página de conversas, 4 chat — inclui gate p/ estados de streaming) → 24 verdes no total. Build + lint limpos.
+- **E2E real no Docker** (Playwright + Chrome, backend/Qdrant/Groq/Gemini reais): lista → nova conversa → seleção de docs → chat criado (`/conversas/N`) → stream real (rótulo "transmitindo▮" **capturado** com resposta parcial — evidência `t7-4c`) → resposta completa fundamentada com 3 cards de refs → ref expandida → reload com histórico persistido.
+- **Auditorias ui-vision** (3 rodadas): sem bloqueadores; melhorias de acessibilidade aplicadas (I6); foco visível global já existia.
+- **Diagnóstico de rota**: página /conversas em branco (rotas não registradas no `App.tsx`) — corrigido; warning `shape-rendering` → `shapeRendering` em ambos os sprites.
+- **Flakiness de teste diagnosticada**: `findByText` resolvia com a mensagem *pendente* transitória e o `toBeInTheDocument` rodava após a remoção → asserts migradas para `waitFor` (atômico); causa documentada.
+- Bug conhecido menor (vetável): o E2E numa conversa com `up.pdf` (doc aleatório) gerou resposta honesta "não sei" — comportamento correto (US9) e desejável.
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -238,3 +260,6 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 22:2x — **Incidente de segurança detectado pela auditoria**: card rag.pdf exibia URL do provider com chave `AQ.…` (dado velho persistido no T4) → sanitização `formatError` no front (mask `key=` + truncar), limpeza do banco (docs 5 e 2), recomendação de rotação da chave. 10 testes verdes, build/lint limpos. Checkpoint aguardando aprovação de commit do T6.
 - 22:3x — **Redesign do gatinho** (H7): corpo inteiro 24x20 + rabo com wag contínuo + em pé na barra do formulário; auditoria ui-vision (2 rodadas) aprovou; E2E sem órfãos (H8, try/finally). Container prod sincronizado. Aguardando aprovação de commit do T6 + rotação da chave.
 - 22:4x — Ajuste fino do gatinho (pedido da usuária): **base/pernas estreitada** (20px→14px, taper natural do corpo sentado); auditoria aprovou (proporção cabeça:corpo:base ~40:50:10). 10 testes ✓, build/lint ✓, prod sincronizado. Aguardando aprovação de commit do T6.
+- 22:5x — Commit+push do T6 (`7169467` docs, `d385474` feat); issue #7 fechada.
+- 23:0x — **T7**: decisões I1–I5 aprovadas (erros inline, gatinho frontal com rabinho atrás, autoscroll+botão, Enter envia, cards no histórico). TDD: 13 testes novos → 24 verdes. Rotas registradas no App (diagnóstico), parser SSE incremental, invalidate no done.
+- 23:1x — E2E real completo (criar conversa → stream "transmitindo▮" capturado → resposta com 3 refs → histórico recarregado); auditorias ui-vision 3x (melhorias I6 aplicadas); flakiness de teste diagnosticada e corrigida (waitFor atômico). Checkpoint aguardando aprovação de commit do T7.
