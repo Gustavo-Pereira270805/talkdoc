@@ -101,15 +101,10 @@ export default function ConversationsPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-8 px-4 py-8">
-      <header className="flex items-center justify-between">
+      <header>
         <h1 className="font-display text-5xl leading-none text-term">
           TalkDoc<span className="blink">_</span>
         </h1>
-        <nav className="font-display text-2xl">
-          <a href="/" className="text-fog hover:text-term">
-            &gt; documentos
-          </a>
-        </nav>
       </header>
 
       <section aria-label="Conversas">
