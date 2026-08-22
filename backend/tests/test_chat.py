@@ -130,10 +130,10 @@ def test_cria_conversa_com_titulo_do_primeiro_documento(chat_ctx) -> None:
     assert response.json()["title"] == "primeiro.pdf"
 
 
-def test_conversa_sem_documentos_400(chat_ctx) -> None:
+def test_conversa_sem_documentos_422(chat_ctx) -> None:
     client, _ = chat_ctx
     response = client.post("/conversations", json={"document_ids": []})
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 def test_chat_fluxo_completo_ssa(chat_ctx) -> None:
@@ -219,6 +219,27 @@ def test_chat_pergunta_vazia_400(chat_ctx) -> None:
         f"/conversations/{conversation_id}/chat", json={"question": "   "}
     )
     assert response.status_code == 400
+
+
+def test_chat_pergunta_gigante_422(chat_ctx) -> None:
+    client, _ = chat_ctx
+    doc_id = _upload_doc(client, "doc.pdf")
+    conversation_id = _conversation(client, [doc_id])
+
+    response = client.post(
+        f"/conversations/{conversation_id}/chat", json={"question": "a" * 5000}
+    )
+    assert response.status_code == 422
+
+
+def test_conversa_titulo_gigante_422(chat_ctx) -> None:
+    client, _ = chat_ctx
+    doc_id = _upload_doc(client, "doc.pdf")
+
+    response = client.post(
+        "/conversations", json={"document_ids": [doc_id], "title": "t" * 1000}
+    )
+    assert response.status_code == 422
 
 
 def test_messages_conversa_inexistente_404(chat_ctx) -> None:

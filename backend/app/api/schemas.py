@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DocumentOut(BaseModel):
@@ -17,8 +17,8 @@ class DocumentDetailOut(DocumentOut):
 
 
 class ConversationCreate(BaseModel):
-    document_ids: list[int]
-    title: str | None = None
+    document_ids: list[int] = Field(min_length=1, max_length=50)
+    title: str | None = Field(default=None, max_length=200)
 
 
 class ConversationOut(BaseModel):
@@ -40,4 +40,4 @@ class MessageOut(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    question: str
+    question: str = Field(min_length=1, max_length=4000)
