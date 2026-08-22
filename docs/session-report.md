@@ -282,6 +282,20 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - **E2E com `reducedMotion: 'reduce'`** (ambiente real da usuária) em :8080: rabo `animationName: "wag"` ✓; widget abre a barra ✓; navegação para CONVERSAS com destaque ✓ (evidências `t10b-1..3`).
 - Anomalia de dev: o Vite dev serviu CSS obsoleto em 2 de 4 execuções (cache) — resolvido com `rm node_modules/.vite`; prod sempre correto.
 
+## Execução — T10c: Rabo pixel a pixel, widget retrátil e markdown no chat (feedback)
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| M4 | **Rabo do gatinho redesenho como 14 pixels individuais** (`<rect>` por pixel) com animação `tail-wave` (0.55s, translate 1px/-1px, `transform-box: fill-box`) e **atrasos escalonados de 0.07s da base à ponta** — os pixels se movem no espaço de forma independente, em onda | "A rotação como objeto só é feia; quero pixels se movendo no espaço, pixel a pixel" | **usuário** |
+| M5 | **Widget ▤ só existe quando a barra está fechada** (renderização condicional `!open`); some ao abrir e retorna ao fechar | "O widget fica sobrepondo a barra; deve sumir quando ela é puxada e retomar depois" | **usuário** |
+| M6 | **Renderizador próprio de markdown** (`MarkdownText`): **negrito**, *itálico*, `código`, títulos `##` (display cyanx), listas `-` (▸) e `---`; marcação desconhecida fica como texto; sem dependências | "Texto feio, cheio de asteriscos e formatações não suportadas" — parser próprio consistente com o do SSE (I7) | **usuário** |
+| M7 | Regra no system prompt: permitir `**negrito**`/`*itálico*`/`` `código` `` e evitar títulos/tabelas; `AssistantMessage` usa o `MarkdownText` | Fecha o ciclo modelo↔frontend | agente (vetável) |
+| M8 | Gotcha documentado: **atributo JSX `text="...\n..."` não processa escapes** (precisa `{'\n'}`) — bug real pego por teste | Lição de teste | agente (vetável) |
+
+**Verificação (aceite do T10c):**
+- **TDD**: 7 testes do MarkdownText + 1 da Sidebar escritos primeiro (red) → 38 verdes; build/lint/prettier limpos; backend 31 testes + ruff + mypy verdes.
+- **E2E em :8080** (reducedMotion reduce): 14 pixels com delays escalonados 0.07s (`tail-wave`); **2 frames capturados provam onda real** (auditoria ui-vision confirmou movimento independente, não rígido); widget some/volta ✓; resposta real do Groq com negrito/código/lista **renderizada sem asteriscos crus** ✓ (evidências `t10c-*`).
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -328,3 +342,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 09:2x — Issue #9 fechada. **T9**: decisões K1–K2 aprovadas (multi-stage instalador+runtime; clone isolado). Backend multi-stage escrito + .dockerignore + .env.example corrigido; build local validado. **Clone limpo real**: git clone temp → compose up (volumes zerados) → **BUG REAL: nginx sem proxy de API (405 no POST /documents)** — corrigido (proxy + SSE sem buffer); fluxo completo E2E no clone: upload → pronto (2 páginas) → conversa → resposta com 2 refs. Auditoria ui-vision 5 etapas ok (sem bloqueadores). Dev religado e sincronizado com os fixes. Aguardando aprovação para PR e fechar a issue #10.
 - 09:3x — PR #15 (T9) merged com checks verdes; issue #10 fechada. **T10**: decisão L1 (README PT-BR). README escrito (arquitetura Mermaid, execução, dev/tests, ADRs, limitações, IA, 4 screenshots reais) e revisado com a skill `no-ai-slop` (eval.md ok). **Colaboradores PAUSADOS (L3)** por pedido da usuária — passo separado aguardando aprovação. PR do README aberto.
 - 09:4x — PR #16 (README) merged com checks verdes. **Feedback da usuária**: navegação invisível + rabo parado. Diagnóstico: rabo congelado = reduced-motion do Windows/Chrome (provado via Playwright); navegação só por links de texto. Decisões M1 (sidebar retrátil via widget ▤ no canto superior esquerdo) e M2 (rabo sempre mexe). TDD: 5 testes da Sidebar → 30 verdes; E2E com reducedMotion em :8080 validou rabo + navegação + destaque; polimentos M3 da auditoria. Aguardando aprovação para PR.
+- 09:5x — PR #17 (sidebar + rabo) merged. **Novo feedback**: rabo "feio" (rotação rígida), widget sobrepondo a barra aberta, markdown cru no chat. Decisões M4 (rabo pixel a pixel, 14 pixels escalonados), M5 (widget condicional), M6 (MarkdownText próprio) + M7 (prompt). TDD: 8 testes novos → 38 verdes; E2E: 2 frames provam onda, widget some/volta, resposta real sem asteriscos. Auditoria ui-vision ok. Aguardando aprovação para PR.

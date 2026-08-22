@@ -8,15 +8,16 @@ export default function Sidebar() {
 
   return (
     <>
-      <button
-        type="button"
-        aria-label="Abrir navegação"
-        aria-expanded={open}
-        onClick={() => setOpen(true)}
-        className="hard-shadow-sm fixed left-4 top-4 z-50 border-2 border-black bg-panel px-3 py-2 font-display text-3xl leading-none text-term transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-      >
-        ▤
-      </button>
+      {!open && (
+        <button
+          type="button"
+          aria-label="Abrir navegação"
+          onClick={() => setOpen(true)}
+          className="hard-shadow-sm fixed left-4 top-4 z-50 border-2 border-black bg-panel px-3 py-2 font-display text-3xl leading-none text-term transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        >
+          ▤
+        </button>
+      )}
       {open && (
         <>
           <button

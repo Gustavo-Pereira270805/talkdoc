@@ -10,6 +10,8 @@ def build_system_prompt(context: str) -> str:
         "- Cada trecho tem um rótulo como [S1], [S2]... CITE o rótulo ao usar a informação.\n"
         "- Se a informação não estiver no contexto, diga claramente que não sabe (não invente).\n"
         "- Responda no mesmo idioma dos documentos e da pergunta.\n"
+        "- Você pode usar **negrito**, *itálico* e `código` (o frontend renderiza); "
+        "evite títulos (#), tabelas e outros formatos de markdown.\n"
         f"Contexto:\n{context}"
     )
 

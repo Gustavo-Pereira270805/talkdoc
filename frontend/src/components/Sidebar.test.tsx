@@ -24,6 +24,15 @@ describe('Sidebar', () => {
     expect(screen.queryByRole('link', { name: /conversas/i })).not.toBeInTheDocument()
   })
 
+  it('esconde o widget enquanto a barra está aberta e o retoma ao fechar', async () => {
+    const user = userEvent.setup()
+    renderSidebar()
+    await user.click(screen.getByRole('button', { name: /abrir navegação/i }))
+    expect(screen.queryByRole('button', { name: /abrir navegação/i })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Fechar navegação' }))
+    expect(screen.getByRole('button', { name: /abrir navegação/i })).toBeInTheDocument()
+  })
+
   it('abre a barra ao clicar no widget, com os botões explícitos', async () => {
     const user = userEvent.setup()
     renderSidebar()
