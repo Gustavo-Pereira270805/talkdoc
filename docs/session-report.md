@@ -2,6 +2,68 @@
 
 Relatório incremental e sucinto da construção do projeto, focado em decisões de arquitetura, skills, frameworks, ferramentas, subagentes e processo. Atualizado a cada etapa relevante.
 
+> **Como ler este relatório (transparência):** cada linha de decisão marca a autoria — **usuário** = decisão tomada pela candidata (Milena); **agente (vetável)** = decisão mecânica do assistente que a candidata podia derrubar lendo o relatório. Nada foi removido nem suavizado; a narrativa abaixo apenas organiza a mesma informação sob a perspectiva do processo seletivo.
+
+## Narrativa de processo — protagonismo da candidata
+
+### 1. Governança do processo (quem manda no quê)
+
+A candidata **desenhou o acordo de trabalho** que regeu todas as sessões (AGENTS.md, "Working agreement"): nível imersivo, **todas as decisões principais passam por ela** (apresentadas em lote com recomendação, nunca decididas por baixo), TDD red-green estrito, checkpoint com evidência antes de **qualquer** commit/push. Ela **detectou e corrigiu uma violação desse acordo** durante o T7 (bloco "eu decido" apresentado pelo assistente) e forçou o formato lote-com-recomendação para todas as decisões seguintes. Disciplina de engenharia de IA: a máquina propõe, o humano decide.
+
+### 2. Engenharia de ferramentas com IA (o "stack" do processo)
+
+A candidata **escolheu e pediu a instalação das ferramentas que moldaram as sessões**:
+
+- **Skills de planejamento** (`grill-with-docs`, `to-spec`, `to-tickets`, `wayfinder`, `grilling`, `domain-modeling`, `codebase-design`): ela participou de **4 rodadas de grilling** (stack, pipeline RAG próprio, providers, Qdrant, SSE, multi-documento), fechou a fronteira de design e publicou a spec (#1) e os tickets T1–T10 com dependências nativas
+- **Skills anti-AI-slop** (`no-ai-slop`, `pixel-art-sprites`): **pedidos por ela** após pesquisa; o README final e o gatinho pixel foram revisados contra elas
+- **Subagente `ui-vision`**: usado em **todas as etapas visuais** para compensar a ausência de visão do assistente — auditorias de tema, gatinho (3 redesigns), sidebar, streaming, referências e contraste WCAG; cada auditoria gerou ação corretiva
+- **MCP `playwright` + webwright**: E2E com navegador real (Chrome) contra a aplicação real rodando no Docker — upload → processamento → chat com streaming, com screenshots como evidência
+- **LSP pyright** (configurado para o venv do Windows): feedback de tipos em tempo real durante todo o backend
+- **CI real**: GitHub Actions com branch protection, **teste negativo deliberado** (PR quebrado de propósito provando que o merge é bloqueado)
+
+### 3. Decisões de produto e UX (todas dela)
+
+| Ticket | Decisões da candidata |
+|---|---|
+| T3 | Escolha do **PyMuPDF** para extração (com tradeoff de imagem Docker explicado) |
+| T4 | Métrica **cosseno**; falha de processamento vira status `failed` com motivo |
+| T5 | Threshold de similaridade **0.3**; contexto vazio → o modelo **diz "não sei"** |
+| T6 | **Tema terminal escuro**, fontes **VT323 + IBM Plex Mono**, **gatinho pixel** (identidade visual inteira); pediu o redesign do gatinho (corpo inteiro, rabo mexendo, em pé na barra) e ajustou a base das pernas |
+| T7 | Erros inline no balão; indicador "pensando" = **gatinho frontal novo** (desenho pedido por ela); autoscroll + botão; Enter envia; refs no histórico |
+| T8 | **eslint + prettier** (fidelidade à spec), **mypy**, **branch protection real** |
+| T9 | Backend multi-stage; **validação de clone limpo** sem destruir dados de dev |
+| T10 | README em PT-BR; **pausa deliberada antes de convidar colaboradores** (controle de mudanças irreversíveis) |
+| Pós-entrega | **5 ciclos iterativos de feedback visual** no gatinho: rabo parado (diagnóstico de acessibilidade real) → rotação rígida "feia" → pixels independentes "desintegração" → flipbook stop-motion → pêndulo com volta. Cada ciclo exigiu diagnóstico técnico (reduced-motion do Windows provado com Playwright) e implementação — a candidata guiou o resultado final pixel a pixel |
+
+### 4. Rastreio técnico e QA (a candidata no banco do passageiro não, no comando)
+
+- **Perguntas técnicas de profundidade**: "O PyMuPDF não tem suporte a OCR?" — resposta honesta sobre tradeoffs (Tesseract, custo de imagem, decisão de escopo documentada)
+- **Uso do mecanismo de compactação**: pediu handoff antes de zerar o contexto e retomou com "Leia `docs/handoff.md` e continue" — fluxo de trabalho multi-sessão com IA
+- **Aprovação de cada commit/PR com evidência** em mãos (screenshots, runs verdes, teste negativo)
+- **Segurança**: autorizou e revisou a auditoria OWASP completa (3 achados corrigidos) e mantém em aberto as recomendações de escopo (auth, rate limiting, rotação de chave) — decisão consciente e registrada
+
+## Painel de ferramentas — o que cada uma fez pelo resultado
+
+| Ferramenta | Onde entrou | O que melhorou |
+|---|---|---|
+| Skills `grill-with-docs`, `grilling`, `domain-modeling`, `codebase-design` | Planejamento (Rounds 1–4) | Domínio documentado (CONTEXT.md), 5 ADRs, glossário — fronteira de design fechada antes do código |
+| Skills `to-spec`, `to-tickets`, `wayfinder` | Planejamento | Spec #1 publicada; tickets T1–T10 tracer-bullet com blocking edges no GitHub |
+| Skills `no-ai-slop`, `pixel-art-sprites` (instaladas a pedido da candidata) | T6/T10 | README sem padrões de "AI slop"; gatinho com princípios reais de pixel art |
+| MCP `playwright` | T6–T10 | Navegador real para E2E; evidências `t6-*..t10-*` |
+| Skill/scripts `webwright` | T6–T10 | Fluxos Playwright reutilizáveis com log de ações e screenshots |
+| Subagente `ui-vision` (compensa a falta de visão do assistente) | T6–T10 + pós-entrega | Auditorias visuais acionáveis: tema, contraste WCAG AA, estados de UI, frames do gatinho, markdown renderizado |
+| Subagente `image-analyzer` | Suporte visual | Análise genérica de imagens |
+| Skills de design (Vercel): `web-design-guidelines`, `vercel-composition-patterns` | Auditorias de UI | Revisões contra Web Interface Guidelines; padrões de composição React |
+| Skills de segurança: `owasp-security-check`, `testing-api-security-with-owasp-top-10` | Pós-entrega | Auditoria OWASP completa (3 achados corrigidos, recomendações registradas) |
+| TDD red-green estrito (pytest, Vitest + Testing Library) | T2–T10 | 33 testes backend + 38 front; bugs reais pegos (magic bytes, parser SSE, JSX escape) |
+| Playwright E2E com providers reais (Groq/Gemini) | T5–T10 | Prova de ponta a ponta: stream, refs, persistência, clone limpo |
+| LSP pyright (+ pyrightconfig p/ venv Windows) | T1–T10 | Tipagem verificada em tempo real no backend |
+| GitHub Actions + branch protection (via `gh`) | T8 | CI com 2 jobs; **teste negativo provou bloqueio real de merge** |
+| Docker multi-stage + clone limpo isolado (`-p talkdoc-clone`) | T9 | Imagens enxutas; `docker compose up` reproduzível do zero |
+| `gh` CLI (issues, PRs, checks, proteção) | T1–T10 | Rastreabilidade total: 1 spec + 10 tickets (#1–#11), 10 PRs (9 merged + 1 prova de bloqueio), branch protection via API |
+| Handoff/compactação (`docs/handoff.md`) | Pós-T5 | Retomada multi-sessão sem perder contexto — fluxo pedido pela candidata |
+| Auditoria OWASP + `pip-audit`/`npm audit` | Pós-entrega | Validação independente de dependências e configuração |
+
 ## Contexto
 
 - **Desafio**: TalkDoc v2 (YAITEC Solutions) — app web de RAG sobre PDF.
