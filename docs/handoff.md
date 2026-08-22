@@ -17,14 +17,11 @@
 
 ## Estado atual (tickets)
 
-- ✅ T1–T5 (commits `d1a496f`→`22c5051`) — fundação, upload, processamento, embeddings+Qdrant, chat SSE backend
-- ✅ T6 (#7 fechada) — frontend upload/status/erros + tema terminal + gatinho pixel (`7169467` docs, `d385474` feat)
-- ✅ T7 (#8 fechada) — frontend conversas/chat/refs (`87e2b96` docs, `2e30b04` feat)
-- ✅ T8 (#9 fechada) — CI + branch protection (PRs #12/#13/#14)
-- ✅ T9 (#10 fechada) — imagens prod + clone limpo (PR #15)
-- ✅ T10 (README, PR #16) + pós-entrega: sidebar retrátil (PR #17), markdown no chat (PR #18), flipbook do rabo (PRs #19/#20), OWASP hardening (PR #21)
-- 🔜 **Fechar T10**: adicionar colaboradores `ygorbalves` e `MateusNavarroR` — **pausado por pedido do usuário**
-- 📄 **`docs/session-report.md`** agora abre com "Narrativa de processo — protagonismo do candidato" + "Painel de ferramentas" (perspectiva do processo seletivo, mantendo a tabela de decisões com autoria transparente)
+- ✅ T1–T10 completos — **todas as issues fechadas** (spec #1 + tickets #2–#11)
+- ✅ **Colaboradores convidados** (22/08, permissão write): `ygorbalves` e `MateusNavarroR` — **aguardando aceite dos e-mails** (verificar em `gh api repos/.../invitations`)
+- ✅ Pós-entrega: sidebar retrátil (PR #17), markdown no chat (PR #18), flipbook do rabo (PRs #19/#20), OWASP hardening (PR #21), narrativa do relatório (PR #22), correção de gênero/nome do usuário (commit 2267331)
+- ⚠️ **branch protection reforçada**: `enforce_admins: true` — nem admin faz push direto em `main` (lição do push direto acidental)
+- 📄 `docs/session-report.md` abre com "Narrativa de processo — protagonismo do candidato" + "Painel de ferramentas"
 
 ## Estado do repositório
 
