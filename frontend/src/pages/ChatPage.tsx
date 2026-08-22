@@ -104,19 +104,10 @@ function ChatRoom({ conversationId }: { conversationId: number }) {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-8 px-4 py-8">
-      <header className="flex items-center justify-between">
+      <header>
         <h1 className="font-display text-5xl leading-none text-term">
           TalkDoc<span className="blink">_</span>
         </h1>
-        <nav className="font-display text-2xl">
-          <a href="/conversas" className="text-fog hover:text-term">
-            &gt; conversas
-          </a>
-          <span className="mx-2 text-fog">/</span>
-          <a href="/" className="text-fog hover:text-term">
-            documentos
-          </a>
-        </nav>
       </header>
 
       <div className="flex flex-col gap-4">

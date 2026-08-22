@@ -269,6 +269,19 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - README completo (arquitetura/execução/decisões/limitações/IA) + screenshots reais do clone limpo + `.env.example` sem segredos (vazio de valores).
 - Colaboradores: **pendente de aprovação** (passo pausado).
 
+## Execução — T10b: Sidebar retrátil + rabo do gatinho (feedback pós-entrega)
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| M1 | **Sidebar retrátil**: widget pequeno `▤` fixo no canto superior esquerdo abre uma barra lateral (DOCUMENTOS/CONVERSAS explícitos, destaque da página atual com `aria-current`, fecha por ✕, fundo escurecido ou navegação) — renderizada no `App.tsx`, presente em todas as páginas; links de texto antigos do header removidos | Pedido explícito: "botão explícito + barra de tarefas retrátil a partir de widget no canto superior esquerdo" | **usuário** |
+| M2 | **Rabo do gatinho mexe sempre**: `.cat-tail` saiu do bloco `prefers-reduced-motion` (animação decorativa mínima, 16°); cursor `_`/blink/"pensando…" e o tail-swap do gatinho frontal seguem respeitando reduced-motion | Diagnóstico real: o reduced-motion do Windows/Chrome da usuária congelava o rabo (comportamento correto de acessibilidade, mas indesejado aqui); provado via Playwright (`animationName` none→wag) | **usuário** |
+| M3 | Polimentos da auditoria ui-vision (3 telas): scrim `bg-ink/80` (mais escuro, foco na sidebar), widget maior (`px-3 py-2 text-3xl`), header "TalkDoc_" + "> navegação" na barra, ✕ maior | Sem bloqueadores; acessibilidade + hierarquia | agente (vetável) |
+
+**Verificação (aceite do T10b):**
+- **TDD**: 5 testes da Sidebar escritos primeiro (widget fechado, abrir, fechar por ✕, fechar pelo fundo, destaque+navegação) → 30 verdes no total; build/lint/prettier limpos.
+- **E2E com `reducedMotion: 'reduce'`** (ambiente real da usuária) em :8080: rabo `animationName: "wag"` ✓; widget abre a barra ✓; navegação para CONVERSAS com destaque ✓ (evidências `t10b-1..3`).
+- Anomalia de dev: o Vite dev serviu CSS obsoleto em 2 de 4 execuções (cache) — resolvido com `rm node_modules/.vite`; prod sempre correto.
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -314,3 +327,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 09:1x — Branch `feat/t8-ci` + PR #12 (checks verdes: backend 40s, frontend 17s); bump das actions (v5/v6 — Node 20 deprecado). Branch protection ativada em `main` (required checks, strict). Merge do PR #12 → run de push em main verde (32535485245). **Teste negativo**: PR #13 com teste que falha → check FAIL → merge recusado pelo gh → PR fechado. Evidência em `evidence/t8-ci-evidence.txt`. Aguardando aprovação para fechar a issue #9.
 - 09:2x — Issue #9 fechada. **T9**: decisões K1–K2 aprovadas (multi-stage instalador+runtime; clone isolado). Backend multi-stage escrito + .dockerignore + .env.example corrigido; build local validado. **Clone limpo real**: git clone temp → compose up (volumes zerados) → **BUG REAL: nginx sem proxy de API (405 no POST /documents)** — corrigido (proxy + SSE sem buffer); fluxo completo E2E no clone: upload → pronto (2 páginas) → conversa → resposta com 2 refs. Auditoria ui-vision 5 etapas ok (sem bloqueadores). Dev religado e sincronizado com os fixes. Aguardando aprovação para PR e fechar a issue #10.
 - 09:3x — PR #15 (T9) merged com checks verdes; issue #10 fechada. **T10**: decisão L1 (README PT-BR). README escrito (arquitetura Mermaid, execução, dev/tests, ADRs, limitações, IA, 4 screenshots reais) e revisado com a skill `no-ai-slop` (eval.md ok). **Colaboradores PAUSADOS (L3)** por pedido da usuária — passo separado aguardando aprovação. PR do README aberto.
+- 09:4x — PR #16 (README) merged com checks verdes. **Feedback da usuária**: navegação invisível + rabo parado. Diagnóstico: rabo congelado = reduced-motion do Windows/Chrome (provado via Playwright); navegação só por links de texto. Decisões M1 (sidebar retrátil via widget ▤ no canto superior esquerdo) e M2 (rabo sempre mexe). TDD: 5 testes da Sidebar → 30 verdes; E2E com reducedMotion em :8080 validou rabo + navegação + destaque; polimentos M3 da auditoria. Aguardando aprovação para PR.
