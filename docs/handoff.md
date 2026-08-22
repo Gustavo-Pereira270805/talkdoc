@@ -20,15 +20,13 @@
 - ✅ T1–T5 (commits `d1a496f`→`22c5051`) — fundação, upload, processamento, embeddings+Qdrant, chat SSE backend
 - ✅ T6 (#7 fechada) — frontend upload/status/erros + tema terminal + gatinho pixel (`7169467` docs, `d385474` feat)
 - ✅ T7 (#8 fechada) — frontend conversas/chat/refs (`87e2b96` docs, `2e30b04` feat)
-- ✅ T8 (#9) — CI no GitHub Actions: workflow `.github/workflows/ci.yml` (push+PR, 2 jobs: backend ruff/mypy/pytest + frontend eslint/prettier/vitest/build), eslint+prettier (J1), mypy (J2), **branch protection em `main`** (J3, required checks, strict) — PR #12 merged, teste negativo PR #13 provou bloqueio. Decisões J1–J8 no report
-- 🔜 **T9 (#10) imagens prod + clone limpo**, T10 (#11) README/screenshots/colaboradores
+- ✅ T8 (#9 fechada) — CI no GitHub Actions: workflow `.github/workflows/ci.yml` (push+PR, 2 jobs: backend ruff/mypy/pytest + frontend eslint/prettier/vitest/build), eslint+prettier (J1), mypy (J2), **branch protection em `main`** (J3, required checks, strict) — PR #12 merged, teste negativo PR #13 provou bloqueio. Decisões J1–J8 no report
+- ✅ T9 (#10 fechada) — imagens prod + clone limpo: backend multi-stage (K1), nginx.conf com **proxy de API** (bug real K4 — POST /documents dava 405 em prod), clone limpo real validado com fluxo completo (upload→pronto→conversa→chat com refs), evidências `t9-*.png`
+- 🔜 **T10 (#11) README/screenshots/colaboradores** — inclui: README com diagrama, decisões (ADRs), limitações, uso de IA (A20) + **adicionar colaboradores `ygorbalves` e `MateusNavarroR`** ao repo + revisão de texto anti-AI-slop (skill `no-ai-slop`)
 
-## T9 — próximo passo exato
+## T10 — próximo passo exato
 
-Issue #10 (ver no GitHub com `gh issue view 10`). Contexto: desafio exige `docker compose up` reproduzível a partir de clone limpo (já parcialmente coberto no T1/B7); T9 valida as **imagens de produção** (build `docker compose build` + boot completo com dados zerados) e o **clone limpo** (instruções de setup, `.env.example`, portas). Proposta de trabalho (validar com a usuária):
-1. Brief + decisões (escopo: build+up com volumes zerados, validação E2E no :8080, docs de setup no README?)
-2. Executar com validação real no Docker (reset total + compose up + E2E)
-3. Evidência + relatório + checkpoint + aprovação de commit/PR
+Issue #11 (ver no GitHub com `gh issue view 11`). É o ticket final (A20): README com arquitetura/diagrama, ADRs, limitações, uso de IA, screenshots reais da execução + convite dos colaboradores. Fluxo de trabalho: branch → PR → checks verdes → merge (branch protection ativa — nunca push direto em `main`).
 
 ## Estado do repositório
 

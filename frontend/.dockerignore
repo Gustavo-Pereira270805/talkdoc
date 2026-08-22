@@ -1,9 +1,3 @@
-node_modules/
-dist/
-.vite/
-.git/
-.gitignore
-*.md
+node_modules
+dist
 .env
-.env.*
-!.env.example

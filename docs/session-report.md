@@ -241,6 +241,22 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - **Teste negativo (prova do bloqueio)**: PR #13 com teste que falha de propósito → check backend FAIL → `gh pr merge` **recusado** (só com `--auto` esperaria, ou `--admin` forçaria) → PR fechado, branch deletada.
 - Evidência: `evidence/t8-ci-evidence.txt` (runs, proteção, bloqueio).
 
+## Execução — T9: Imagens de produção e teste de clone limpo
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| K1 | Backend **multi-stage**: builder (`pip install --target=/deps .`) + runtime `python:3.12-slim` com `PYTHONPATH=/deps` (sem pip no runtime); frontend já era multi-stage (node→nginx) | AC da issue; imagem final enxuta; padrão moderno | **usuário** |
+| K2 | Clone limpo validado com **project-name isolado** (`talkdoc-clone`) — volumes novos, dados de dev preservados; descoberto que o compose **concatena** listas de `ports` (override somou em vez de substituir) → opção segura: pausar dev, subir clone nas portas padrão, religar dev | Não destruir histórico local; validação 100% fiel | **usuário** |
+| K3 | `.dockerignore` (backend: .venv/__pycache__/tests/.env; frontend: node_modules/dist/.env) + `.env.example` com modelos reais (`gpt-oss-120b`, `gemini-embedding-001`) | Contexto de build enxuto, sem segredos na imagem; docs coerentes | agente (vetável) |
+| K4 | **BUG REAL ENCONTRADO**: `frontend/nginx.conf` não tinha proxy para a API — prod (nginx) devolvia index.html para GETs da API e **405 para POST** (upload quebrado em produção). E2Es anteriores rodavam no dev server (proxy Vite) e nunca exercitaram o nginx. Fix: `location /documents`, `/conversations` (com `proxy_buffering off` p/ SSE em tempo real) e `/health` → `backend:8000` | AC "fluxo completo num clone limpo" pegou o bug; sem proxy o produto não funcionava em produção | agente (vetável) + bug |
+| K5 | Auditoria ui-vision das 5 etapas: sem bloqueadores; botão ENVIAR durante upload já é desabilitado (`disabled={uploading}` — "aceso" no print era artefato de timing do screenshot) | - | agente (vetável) |
+
+**Verificação (aceite do T9):**
+- **Clone limpo real**: `git clone` em pasta temp → `.env` copiado → `docker compose up -d --build` (volumes zerados, migrate rodou, Qdrant fresh) → backend healthy, frontend 200.
+- **Fluxo completo no clone (:8080, nginx de prod)**: upload do `talkdoc_test.pdf` (PDF gerado, 2 págs) → "Na fila" → **"Pronto" (2 páginas)** com Gemini real num Qdrant zerado → conversa criada → pergunta → resposta com **2 cards de referência âmbar** (`S1 · pág. 2`, `S2 · pág. 1`). Evidências `t9-1..t9-6`.
+- **Stack dev**: pausado durante o teste e religado; backend e frontend **reconstruídos com os fixes** (multi-stage + nginx) — `/health` e `/documents` via :8080 OK agora.
+- Limpeza: `talkdoc-clone down -v` + pasta temp.
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -284,3 +300,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 23:1x — E2E real completo (criar conversa → stream "transmitindo▮" capturado → resposta com 3 refs → histórico recarregado); auditorias ui-vision 3x (melhorias I6 aplicadas); flakiness de teste diagnosticada e corrigida (waitFor atômico). Checkpoint aguardando aprovação de commit do T7.
 - 09:0x — **T8**: decisões J1–J3 aprovadas (eslint+prettier, mypy default, branch protection). Backend: mypy instalado e verde (3 erros mecânicos corrigidos: iterador do PyMuPDF + anotação do payload). Frontend: eslint+prettier configurados (flat config, react-hooks/refresh), oxlint removido; refactor do ChatPage (`ChatRoom key={id}`) eliminando setState-em-efeito; prettier normalizou 29 arquivos. 31 testes backend + 25 front + build verdes. Workflow ci.yml escrito. Aguardando aprovação para push/PR/proteção.
 - 09:1x — Branch `feat/t8-ci` + PR #12 (checks verdes: backend 40s, frontend 17s); bump das actions (v5/v6 — Node 20 deprecado). Branch protection ativada em `main` (required checks, strict). Merge do PR #12 → run de push em main verde (32535485245). **Teste negativo**: PR #13 com teste que falha → check FAIL → merge recusado pelo gh → PR fechado. Evidência em `evidence/t8-ci-evidence.txt`. Aguardando aprovação para fechar a issue #9.
+- 09:2x — Issue #9 fechada. **T9**: decisões K1–K2 aprovadas (multi-stage instalador+runtime; clone isolado). Backend multi-stage escrito + .dockerignore + .env.example corrigido; build local validado. **Clone limpo real**: git clone temp → compose up (volumes zerados) → **BUG REAL: nginx sem proxy de API (405 no POST /documents)** — corrigido (proxy + SSE sem buffer); fluxo completo E2E no clone: upload → pronto (2 páginas) → conversa → resposta com 2 refs. Auditoria ui-vision 5 etapas ok (sem bloqueadores). Dev religado e sincronizado com os fixes. Aguardando aprovação para PR e fechar a issue #10.
