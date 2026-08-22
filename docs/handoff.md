@@ -20,9 +20,11 @@
 - ✅ T1–T5 (commits `d1a496f`→`22c5051`) — fundação, upload, processamento, embeddings+Qdrant, chat SSE backend
 - ✅ T6 (#7 fechada) — frontend upload/status/erros + tema terminal + gatinho pixel (`7169467` docs, `d385474` feat)
 - ✅ T7 (#8 fechada) — frontend conversas/chat/refs (`87e2b96` docs, `2e30b04` feat)
-- ✅ T8 (#9 fechada) — CI no GitHub Actions: workflow `.github/workflows/ci.yml` (push+PR, 2 jobs: backend ruff/mypy/pytest + frontend eslint/prettier/vitest/build), eslint+prettier (J1), mypy (J2), **branch protection em `main`** (J3, required checks, strict) — PR #12 merged, teste negativo PR #13 provou bloqueio. Decisões J1–J8 no report
-- ✅ T9 (#10 fechada) — imagens prod + clone limpo: backend multi-stage (K1), nginx.conf com **proxy de API** (bug real K4 — POST /documents dava 405 em prod), clone limpo real validado com fluxo completo (upload→pronto→conversa→chat com refs), evidências `t9-*.png`
-- 🔄 **T10 (#11) em andamento**: README em PT-BR escrito (L1/L2, revisado com no-ai-slop) + relatório/handoff — **PR aberto, aguardando checks/merge**. **PENDENTE E PAUSADO: adicionar colaboradores `ygorbalves` e `MateusNavarroR`** (L3 — pedido explícito da usuária: pausar antes do convite; comandos: `gh api -X PUT repos/Gustavo-Pereira270805/talkdoc/collaborators/ygorbalves -f permission=push` e idem MateusNavarroR)
+- ✅ T8 (#9 fechada) — CI + branch protection (PRs #12/#13/#14)
+- ✅ T9 (#10 fechada) — imagens prod + clone limpo (PR #15)
+- ✅ T10 (README, PR #16) + pós-entrega: sidebar retrátil (PR #17), markdown no chat (PR #18), flipbook do rabo (PRs #19/#20), OWASP hardening (PR #21)
+- 🔜 **Fechar T10**: adicionar colaboradores `ygorbalves` e `MateusNavarroR` — **pausado por pedido da usuária**
+- 📄 **`docs/session-report.md`** agora abre com "Narrativa de processo — protagonismo da candidata" + "Painel de ferramentas" (perspectiva do processo seletivo, mantendo a tabela de decisões com autoria transparente)
 
 ## Estado do repositório
 
