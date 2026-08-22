@@ -257,6 +257,18 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - **Stack dev**: pausado durante o teste e religado; backend e frontend **reconstruídos com os fixes** (multi-stage + nginx) — `/health` e `/documents` via :8080 OK agora.
 - Limpeza: `talkdoc-clone down -v` + pasta temp.
 
+## Execução — T10: Entrega final (README, screenshots e colaboradores)
+
+| # | Decisão | Justificativa | Autor |
+|---|---|---|---|
+| L1 | README em **PT-BR** | Toda a documentação (ADRs, issues, relatório) já é PT-BR; desafio em português | **usuário** |
+| L2 | README com: visão curta e concreta, diagrama Mermaid (fluxo + camadas), "Como rodar" (clone limpo), dev + testes/lint, tabela de ADRs, limitações honestas, **disclosure de uso de IA**, 4 screenshots reais (t9-*) | AC da issue; texto revisado contra a skill `no-ai-slop` (eval.md — sem palavras/padrões banidos) | agente (vetável) |
+| L3 | **PAUSE antes de adicionar os colaboradores** (`ygorbalves`, `MateusNavarroR`) — pedido explícito da usuária; o convite é passo separado com aprovação própria | Usuária quer revisar antes do convite | **usuário** |
+
+**Verificação (aceite do T10):**
+- README completo (arquitetura/execução/decisões/limitações/IA) + screenshots reais do clone limpo + `.env.example` sem segredos (vazio de valores).
+- Colaboradores: **pendente de aprovação** (passo pausado).
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -301,3 +313,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 09:0x — **T8**: decisões J1–J3 aprovadas (eslint+prettier, mypy default, branch protection). Backend: mypy instalado e verde (3 erros mecânicos corrigidos: iterador do PyMuPDF + anotação do payload). Frontend: eslint+prettier configurados (flat config, react-hooks/refresh), oxlint removido; refactor do ChatPage (`ChatRoom key={id}`) eliminando setState-em-efeito; prettier normalizou 29 arquivos. 31 testes backend + 25 front + build verdes. Workflow ci.yml escrito. Aguardando aprovação para push/PR/proteção.
 - 09:1x — Branch `feat/t8-ci` + PR #12 (checks verdes: backend 40s, frontend 17s); bump das actions (v5/v6 — Node 20 deprecado). Branch protection ativada em `main` (required checks, strict). Merge do PR #12 → run de push em main verde (32535485245). **Teste negativo**: PR #13 com teste que falha → check FAIL → merge recusado pelo gh → PR fechado. Evidência em `evidence/t8-ci-evidence.txt`. Aguardando aprovação para fechar a issue #9.
 - 09:2x — Issue #9 fechada. **T9**: decisões K1–K2 aprovadas (multi-stage instalador+runtime; clone isolado). Backend multi-stage escrito + .dockerignore + .env.example corrigido; build local validado. **Clone limpo real**: git clone temp → compose up (volumes zerados) → **BUG REAL: nginx sem proxy de API (405 no POST /documents)** — corrigido (proxy + SSE sem buffer); fluxo completo E2E no clone: upload → pronto (2 páginas) → conversa → resposta com 2 refs. Auditoria ui-vision 5 etapas ok (sem bloqueadores). Dev religado e sincronizado com os fixes. Aguardando aprovação para PR e fechar a issue #10.
+- 09:3x — PR #15 (T9) merged com checks verdes; issue #10 fechada. **T10**: decisão L1 (README PT-BR). README escrito (arquitetura Mermaid, execução, dev/tests, ADRs, limitações, IA, 4 screenshots reais) e revisado com a skill `no-ai-slop` (eval.md ok). **Colaboradores PAUSADOS (L3)** por pedido da usuária — passo separado aguardando aprovação. PR do README aberto.
