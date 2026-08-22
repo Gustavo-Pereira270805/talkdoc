@@ -56,20 +56,20 @@
   }
 }
 
-@keyframes wag {
+@keyframes tail-wave {
   0%,
   100% {
-    transform: rotate(-16deg);
+    transform: translate(0, 0);
   }
   50% {
-    transform: rotate(16deg);
+    transform: translate(1px, -1px);
   }
 }
 
-.cat-tail {
+.tail-pixel {
   transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: wag 0.7s linear infinite;
+  transform-origin: center;
+  animation: tail-wave 0.55s ease-in-out infinite;
 }
 
 @keyframes tail-swap-l {

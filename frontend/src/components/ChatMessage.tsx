@@ -1,11 +1,12 @@
 import type { Message, Reference } from '../api/conversations'
 import { formatError } from './formatError'
+import MarkdownText from './MarkdownText'
 import RefCard from './RefCard'
 
 export function AssistantMessage({ content, refs }: { content: string; refs: Reference[] | null }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="whitespace-pre-wrap leading-relaxed text-term">{content}</p>
+      <MarkdownText text={content} />
       {refs?.length ? (
         <div className="flex flex-col gap-1.5">
           {refs.map((reference) => (
