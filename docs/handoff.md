@@ -22,11 +22,7 @@
 - ✅ T7 (#8 fechada) — frontend conversas/chat/refs (`87e2b96` docs, `2e30b04` feat)
 - ✅ T8 (#9 fechada) — CI no GitHub Actions: workflow `.github/workflows/ci.yml` (push+PR, 2 jobs: backend ruff/mypy/pytest + frontend eslint/prettier/vitest/build), eslint+prettier (J1), mypy (J2), **branch protection em `main`** (J3, required checks, strict) — PR #12 merged, teste negativo PR #13 provou bloqueio. Decisões J1–J8 no report
 - ✅ T9 (#10 fechada) — imagens prod + clone limpo: backend multi-stage (K1), nginx.conf com **proxy de API** (bug real K4 — POST /documents dava 405 em prod), clone limpo real validado com fluxo completo (upload→pronto→conversa→chat com refs), evidências `t9-*.png`
-- 🔜 **T10 (#11) README/screenshots/colaboradores** — inclui: README com diagrama, decisões (ADRs), limitações, uso de IA (A20) + **adicionar colaboradores `ygorbalves` e `MateusNavarroR`** ao repo + revisão de texto anti-AI-slop (skill `no-ai-slop`)
-
-## T10 — próximo passo exato
-
-Issue #11 (ver no GitHub com `gh issue view 11`). É o ticket final (A20): README com arquitetura/diagrama, ADRs, limitações, uso de IA, screenshots reais da execução + convite dos colaboradores. Fluxo de trabalho: branch → PR → checks verdes → merge (branch protection ativa — nunca push direto em `main`).
+- 🔄 **T10 (#11) em andamento**: README em PT-BR escrito (L1/L2, revisado com no-ai-slop) + relatório/handoff — **PR aberto, aguardando checks/merge**. **PENDENTE E PAUSADO: adicionar colaboradores `ygorbalves` e `MateusNavarroR`** (L3 — pedido explícito da usuária: pausar antes do convite; comandos: `gh api -X PUT repos/Gustavo-Pereira270805/talkdoc/collaborators/ygorbalves -f permission=push` e idem MateusNavarroR)
 
 ## Estado do repositório
 
