@@ -56,20 +56,66 @@
   }
 }
 
-@keyframes tail-wave {
+@keyframes tail-f1 {
   0%,
-  100% {
-    transform: translate(0, 0);
+  25% {
+    opacity: 1;
   }
+  25.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes tail-f2 {
+  0%,
+  25% {
+    opacity: 0;
+  }
+  25.01%,
   50% {
-    transform: translate(1px, -1px);
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes tail-f3 {
+  0%,
+  50% {
+    opacity: 0;
+  }
+  50.01%,
+  75% {
+    opacity: 1;
+  }
+  75.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes tail-f4 {
+  0%,
+  75% {
+    opacity: 0;
+  }
+  75.01%,
+  100% {
+    opacity: 1;
   }
 }
 
-.tail-pixel {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: tail-wave 0.55s ease-in-out infinite;
+.tail-frame-1 {
+  animation: tail-f1 0.8s steps(1, end) infinite;
+}
+.tail-frame-2 {
+  animation: tail-f2 0.8s steps(1, end) infinite;
+}
+.tail-frame-3 {
+  animation: tail-f3 0.8s steps(1, end) infinite;
+}
+.tail-frame-4 {
+  animation: tail-f4 0.8s steps(1, end) infinite;
 }
 
 @keyframes tail-swap-l {
