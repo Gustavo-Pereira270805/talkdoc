@@ -5,7 +5,7 @@
 ## O projeto
 
 - **Desafio**: TalkDoc v2 (YAITEC Solutions) — app web de RAG sobre PDF. Repo privado `https://github.com/Gustavo-Pereira270805/talkdoc` (colaboradores `ygorbalves` e `MateusNavarroR` entram no fim). Prazo 48h, ~8h esforço.
-- **Usuário**: Milena — Windows 11, opencode, PT-BR. Trabalha em modo **imersivo** (explicar código em tempo real, sem jargão). **Nunca commitar/push sem permissão explícita**.
+- **Usuário**: Gustavo — Windows 11, opencode, PT-BR. Trabalha em modo **imersivo** (explicar código em tempo real, sem jargão). **Nunca commitar/push sem permissão explícita**.
 - **Workdir**: `C:\Users\Milena\OneDrive\Documentos\programas\projeto_yaitec` (repo git).
 
 ## Acordo de trabalho (AGENTS.md)
@@ -23,8 +23,8 @@
 - ✅ T8 (#9 fechada) — CI + branch protection (PRs #12/#13/#14)
 - ✅ T9 (#10 fechada) — imagens prod + clone limpo (PR #15)
 - ✅ T10 (README, PR #16) + pós-entrega: sidebar retrátil (PR #17), markdown no chat (PR #18), flipbook do rabo (PRs #19/#20), OWASP hardening (PR #21)
-- 🔜 **Fechar T10**: adicionar colaboradores `ygorbalves` e `MateusNavarroR` — **pausado por pedido da usuária**
-- 📄 **`docs/session-report.md`** agora abre com "Narrativa de processo — protagonismo da candidata" + "Painel de ferramentas" (perspectiva do processo seletivo, mantendo a tabela de decisões com autoria transparente)
+- 🔜 **Fechar T10**: adicionar colaboradores `ygorbalves` e `MateusNavarroR` — **pausado por pedido do usuário**
+- 📄 **`docs/session-report.md`** agora abre com "Narrativa de processo — protagonismo do candidato" + "Painel de ferramentas" (perspectiva do processo seletivo, mantendo a tabela de decisões com autoria transparente)
 
 ## Estado do repositório
 

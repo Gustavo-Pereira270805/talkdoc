@@ -2,40 +2,40 @@
 
 Relatório incremental e sucinto da construção do projeto, focado em decisões de arquitetura, skills, frameworks, ferramentas, subagentes e processo. Atualizado a cada etapa relevante.
 
-> **Como ler este relatório (transparência):** cada linha de decisão marca a autoria — **usuário** = decisão tomada pela candidata (Milena); **agente (vetável)** = decisão mecânica do assistente que a candidata podia derrubar lendo o relatório. Nada foi removido nem suavizado; a narrativa abaixo apenas organiza a mesma informação sob a perspectiva do processo seletivo.
+> **Como ler este relatório (transparência):** cada linha de decisão marca a autoria — **usuário** = decisão tomada pelo candidato (Gustavo); **agente (vetável)** = decisão mecânica do assistente que o candidato podia derrubar lendo o relatório. Nada foi removido nem suavizado; a narrativa abaixo apenas organiza a mesma informação sob a perspectiva do processo seletivo.
 
-## Narrativa de processo — protagonismo da candidata
+## Narrativa de processo — protagonismo do candidato
 
 ### 1. Governança do processo (quem manda no quê)
 
-A candidata **desenhou o acordo de trabalho** que regeu todas as sessões (AGENTS.md, "Working agreement"): nível imersivo, **todas as decisões principais passam por ela** (apresentadas em lote com recomendação, nunca decididas por baixo), TDD red-green estrito, checkpoint com evidência antes de **qualquer** commit/push. Ela **detectou e corrigiu uma violação desse acordo** durante o T7 (bloco "eu decido" apresentado pelo assistente) e forçou o formato lote-com-recomendação para todas as decisões seguintes. Disciplina de engenharia de IA: a máquina propõe, o humano decide.
+O candidato **desenhou o acordo de trabalho** que regeu todas as sessões (AGENTS.md, "Working agreement"): nível imersivo, **todas as decisões principais passam por ele** (apresentadas em lote com recomendação, nunca decididas por baixo), TDD red-green estrito, checkpoint com evidência antes de **qualquer** commit/push. Ele **detectou e corrigiu uma violação desse acordo** durante o T7 (bloco "eu decido" apresentado pelo assistente) e forçou o formato lote-com-recomendação para todas as decisões seguintes. Disciplina de engenharia de IA: a máquina propõe, o humano decide.
 
 ### 2. Engenharia de ferramentas com IA (o "stack" do processo)
 
-A candidata **escolheu e pediu a instalação das ferramentas que moldaram as sessões**:
+O candidato **escolheu e pediu a instalação das ferramentas que moldaram as sessões**:
 
-- **Skills de planejamento** (`grill-with-docs`, `to-spec`, `to-tickets`, `wayfinder`, `grilling`, `domain-modeling`, `codebase-design`): ela participou de **4 rodadas de grilling** (stack, pipeline RAG próprio, providers, Qdrant, SSE, multi-documento), fechou a fronteira de design e publicou a spec (#1) e os tickets T1–T10 com dependências nativas
-- **Skills anti-AI-slop** (`no-ai-slop`, `pixel-art-sprites`): **pedidos por ela** após pesquisa; o README final e o gatinho pixel foram revisados contra elas
+- **Skills de planejamento** (`grill-with-docs`, `to-spec`, `to-tickets`, `wayfinder`, `grilling`, `domain-modeling`, `codebase-design`): ele participou de **4 rodadas de grilling** (stack, pipeline RAG próprio, providers, Qdrant, SSE, multi-documento), fechou a fronteira de design e publicou a spec (#1) e os tickets T1–T10 com dependências nativas
+- **Skills anti-AI-slop** (`no-ai-slop`, `pixel-art-sprites`): **pedidos por ele** após pesquisa; o README final e o gatinho pixel foram revisados contra elas
 - **Subagente `ui-vision`**: usado em **todas as etapas visuais** para compensar a ausência de visão do assistente — auditorias de tema, gatinho (3 redesigns), sidebar, streaming, referências e contraste WCAG; cada auditoria gerou ação corretiva
 - **MCP `playwright` + webwright**: E2E com navegador real (Chrome) contra a aplicação real rodando no Docker — upload → processamento → chat com streaming, com screenshots como evidência
 - **LSP pyright** (configurado para o venv do Windows): feedback de tipos em tempo real durante todo o backend
 - **CI real**: GitHub Actions com branch protection, **teste negativo deliberado** (PR quebrado de propósito provando que o merge é bloqueado)
 
-### 3. Decisões de produto e UX (todas dela)
+### 3. Decisões de produto e UX (todas dele)
 
-| Ticket | Decisões da candidata |
+| Ticket | Decisões do candidato |
 |---|---|
 | T3 | Escolha do **PyMuPDF** para extração (com tradeoff de imagem Docker explicado) |
 | T4 | Métrica **cosseno**; falha de processamento vira status `failed` com motivo |
 | T5 | Threshold de similaridade **0.3**; contexto vazio → o modelo **diz "não sei"** |
 | T6 | **Tema terminal escuro**, fontes **VT323 + IBM Plex Mono**, **gatinho pixel** (identidade visual inteira); pediu o redesign do gatinho (corpo inteiro, rabo mexendo, em pé na barra) e ajustou a base das pernas |
-| T7 | Erros inline no balão; indicador "pensando" = **gatinho frontal novo** (desenho pedido por ela); autoscroll + botão; Enter envia; refs no histórico |
+| T7 | Erros inline no balão; indicador "pensando" = **gatinho frontal novo** (desenho pedido por ele); autoscroll + botão; Enter envia; refs no histórico |
 | T8 | **eslint + prettier** (fidelidade à spec), **mypy**, **branch protection real** |
 | T9 | Backend multi-stage; **validação de clone limpo** sem destruir dados de dev |
 | T10 | README em PT-BR; **pausa deliberada antes de convidar colaboradores** (controle de mudanças irreversíveis) |
-| Pós-entrega | **5 ciclos iterativos de feedback visual** no gatinho: rabo parado (diagnóstico de acessibilidade real) → rotação rígida "feia" → pixels independentes "desintegração" → flipbook stop-motion → pêndulo com volta. Cada ciclo exigiu diagnóstico técnico (reduced-motion do Windows provado com Playwright) e implementação — a candidata guiou o resultado final pixel a pixel |
+| Pós-entrega | **5 ciclos iterativos de feedback visual** no gatinho: rabo parado (diagnóstico de acessibilidade real) → rotação rígida "feia" → pixels independentes "desintegração" → flipbook stop-motion → pêndulo com volta. Cada ciclo exigiu diagnóstico técnico (reduced-motion do Windows provado com Playwright) e implementação — o candidato guiou o resultado final pixel a pixel |
 
-### 4. Rastreio técnico e QA (a candidata no banco do passageiro não, no comando)
+### 4. Rastreio técnico e QA (o candidato no banco do passageiro não, no comando)
 
 - **Perguntas técnicas de profundidade**: "O PyMuPDF não tem suporte a OCR?" — resposta honesta sobre tradeoffs (Tesseract, custo de imagem, decisão de escopo documentada)
 - **Uso do mecanismo de compactação**: pediu handoff antes de zerar o contexto e retomou com "Leia `docs/handoff.md` e continue" — fluxo de trabalho multi-sessão com IA
@@ -48,7 +48,7 @@ A candidata **escolheu e pediu a instalação das ferramentas que moldaram as se
 |---|---|---|
 | Skills `grill-with-docs`, `grilling`, `domain-modeling`, `codebase-design` | Planejamento (Rounds 1–4) | Domínio documentado (CONTEXT.md), 5 ADRs, glossário — fronteira de design fechada antes do código |
 | Skills `to-spec`, `to-tickets`, `wayfinder` | Planejamento | Spec #1 publicada; tickets T1–T10 tracer-bullet com blocking edges no GitHub |
-| Skills `no-ai-slop`, `pixel-art-sprites` (instaladas a pedido da candidata) | T6/T10 | README sem padrões de "AI slop"; gatinho com princípios reais de pixel art |
+| Skills `no-ai-slop`, `pixel-art-sprites` (instaladas a pedido do candidato) | T6/T10 | README sem padrões de "AI slop"; gatinho com princípios reais de pixel art |
 | MCP `playwright` | T6–T10 | Navegador real para E2E; evidências `t6-*..t10-*` |
 | Skill/scripts `webwright` | T6–T10 | Fluxos Playwright reutilizáveis com log de ações e screenshots |
 | Subagente `ui-vision` (compensa a falta de visão do assistente) | T6–T10 + pós-entrega | Auditorias visuais acionáveis: tema, contraste WCAG AA, estados de UI, frames do gatinho, markdown renderizado |
@@ -61,7 +61,7 @@ A candidata **escolheu e pediu a instalação das ferramentas que moldaram as se
 | GitHub Actions + branch protection (via `gh`) | T8 | CI com 2 jobs; **teste negativo provou bloqueio real de merge** |
 | Docker multi-stage + clone limpo isolado (`-p talkdoc-clone`) | T9 | Imagens enxutas; `docker compose up` reproduzível do zero |
 | `gh` CLI (issues, PRs, checks, proteção) | T1–T10 | Rastreabilidade total: 1 spec + 10 tickets (#1–#11), 10 PRs (9 merged + 1 prova de bloqueio), branch protection via API |
-| Handoff/compactação (`docs/handoff.md`) | Pós-T5 | Retomada multi-sessão sem perder contexto — fluxo pedido pela candidata |
+| Handoff/compactação (`docs/handoff.md`) | Pós-T5 | Retomada multi-sessão sem perder contexto — fluxo pedido pelo candidato |
 | Auditoria OWASP + `pip-audit`/`npm audit` | Pós-entrega | Validação independente de dependências e configuração |
 
 ## Contexto
@@ -252,8 +252,8 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 | H4 | Detalhes do tema: bordas sólidas 2px, **sombra dura 4px offset** (sem blur), botão com efeito *pressed* (translate), badges sólidos com texto escuro, `blink` animado respeitando `prefers-reduced-motion`, ">" decorativo fora do `<label>` (acessibilidade), erros com `✕` + truncamento | Diretriz "sem gradiente/sem AI-slop" do usuário | agente (vetável) |
 | H5 | Sanitização de erros no front (`formatError`): **mascarar `key=`/`token=` em URLs + truncar a ~140 chars** | Incidente real: card exibia URL do provider com chave `AQ.…` (dado velho do T4, persistido no banco) — defesa em profundidade + limpeza do registro (doc 5 rag.pdf) | agente (vetável) + incidente |
 | H6 | Skills instaladas: `petergyang/no-ai-slop` (revisão de texto/copy anti-AI-slop, p/ T10/README) + `omer-metin/pixel-art-sprites` (princípios de pixel art) | Pesquisa a pedido do usuário; no-ai-slop 6.5K instalações, fonte confiável | agente (vetável) |
-| H7 | **Gatinho de corpo inteiro** (vista lateral sentado, grid 24x20, olhos como "buracos" no tema terminal) substituindo o rosto 18x16 que parecia coração; **rabo com animação `wag` contínua** (0.7s, ±16°, `transform-box: fill-box`, pausa com `prefers-reduced-motion`); posicionado **em pé sobre a barra** do formulário (base sobreposta 2px na borda, `z-10`); favicon atualizado; **ponte de pixels na raiz do rabo** (correção da auditoria — rabo "voador") | Pedido explícito da usuária ("corpo inteiro, simples, rabo mexendo sempre, em pé na barra da caixa de chat"); padrão reutilizável no T7 (chat box) | **usuário** + correção agente (vetável) |
-| H8 | Automação do E2E sem processos órfãos: comando único com `try/finally` (sobe o dev server, captura, mata por porta). Proposta p/ T9: Playwright Test `webServer` (start/kill automático) | Feedback da usuária sobre processos que não encerram sozinhos | agente (vetável) |
+| H7 | **Gatinho de corpo inteiro** (vista lateral sentado, grid 24x20, olhos como "buracos" no tema terminal) substituindo o rosto 18x16 que parecia coração; **rabo com animação `wag` contínua** (0.7s, ±16°, `transform-box: fill-box`, pausa com `prefers-reduced-motion`); posicionado **em pé sobre a barra** do formulário (base sobreposta 2px na borda, `z-10`); favicon atualizado; **ponte de pixels na raiz do rabo** (correção da auditoria — rabo "voador") | Pedido explícito do usuário ("corpo inteiro, simples, rabo mexendo sempre, em pé na barra da caixa de chat"); padrão reutilizável no T7 (chat box) | **usuário** + correção agente (vetável) |
+| H8 | Automação do E2E sem processos órfãos: comando único com `try/finally` (sobe o dev server, captura, mata por porta). Proposta p/ T9: Playwright Test `webServer` (start/kill automático) | Feedback do usuário sobre processos que não encerram sozinhos | agente (vetável) |
 
 **Verificação (aceite do T6):**
 - **TDD red-green estrito**: 7 testes da página escritos primeiro (red) → implementação → 10 verdes (7 página + 3 `formatError`). Build + oxlint limpos.
@@ -325,7 +325,7 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 |---|---|---|---|
 | L1 | README em **PT-BR** | Toda a documentação (ADRs, issues, relatório) já é PT-BR; desafio em português | **usuário** |
 | L2 | README com: visão curta e concreta, diagrama Mermaid (fluxo + camadas), "Como rodar" (clone limpo), dev + testes/lint, tabela de ADRs, limitações honestas, **disclosure de uso de IA**, 4 screenshots reais (t9-*) | AC da issue; texto revisado contra a skill `no-ai-slop` (eval.md — sem palavras/padrões banidos) | agente (vetável) |
-| L3 | **PAUSE antes de adicionar os colaboradores** (`ygorbalves`, `MateusNavarroR`) — pedido explícito da usuária; o convite é passo separado com aprovação própria | Usuária quer revisar antes do convite | **usuário** |
+| L3 | **PAUSE antes de adicionar os colaboradores** (`ygorbalves`, `MateusNavarroR`) — pedido explícito do usuário; o convite é passo separado com aprovação própria | Usuário quer revisar antes do convite | **usuário** |
 
 **Verificação (aceite do T10):**
 - README completo (arquitetura/execução/decisões/limitações/IA) + screenshots reais do clone limpo + `.env.example` sem segredos (vazio de valores).
@@ -336,12 +336,12 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 | # | Decisão | Justificativa | Autor |
 |---|---|---|---|
 | M1 | **Sidebar retrátil**: widget pequeno `▤` fixo no canto superior esquerdo abre uma barra lateral (DOCUMENTOS/CONVERSAS explícitos, destaque da página atual com `aria-current`, fecha por ✕, fundo escurecido ou navegação) — renderizada no `App.tsx`, presente em todas as páginas; links de texto antigos do header removidos | Pedido explícito: "botão explícito + barra de tarefas retrátil a partir de widget no canto superior esquerdo" | **usuário** |
-| M2 | **Rabo do gatinho mexe sempre**: `.cat-tail` saiu do bloco `prefers-reduced-motion` (animação decorativa mínima, 16°); cursor `_`/blink/"pensando…" e o tail-swap do gatinho frontal seguem respeitando reduced-motion | Diagnóstico real: o reduced-motion do Windows/Chrome da usuária congelava o rabo (comportamento correto de acessibilidade, mas indesejado aqui); provado via Playwright (`animationName` none→wag) | **usuário** |
+| M2 | **Rabo do gatinho mexe sempre**: `.cat-tail` saiu do bloco `prefers-reduced-motion` (animação decorativa mínima, 16°); cursor `_`/blink/"pensando…" e o tail-swap do gatinho frontal seguem respeitando reduced-motion | Diagnóstico real: o reduced-motion do Windows/Chrome do usuário congelava o rabo (comportamento correto de acessibilidade, mas indesejado aqui); provado via Playwright (`animationName` none→wag) | **usuário** |
 | M3 | Polimentos da auditoria ui-vision (3 telas): scrim `bg-ink/80` (mais escuro, foco na sidebar), widget maior (`px-3 py-2 text-3xl`), header "TalkDoc_" + "> navegação" na barra, ✕ maior | Sem bloqueadores; acessibilidade + hierarquia | agente (vetável) |
 
 **Verificação (aceite do T10b):**
 - **TDD**: 5 testes da Sidebar escritos primeiro (widget fechado, abrir, fechar por ✕, fechar pelo fundo, destaque+navegação) → 30 verdes no total; build/lint/prettier limpos.
-- **E2E com `reducedMotion: 'reduce'`** (ambiente real da usuária) em :8080: rabo `animationName: "wag"` ✓; widget abre a barra ✓; navegação para CONVERSAS com destaque ✓ (evidências `t10b-1..3`).
+- **E2E com `reducedMotion: 'reduce'`** (ambiente real do usuário) em :8080: rabo `animationName: "wag"` ✓; widget abre a barra ✓; navegação para CONVERSAS com destaque ✓ (evidências `t10b-1..3`).
 - Anomalia de dev: o Vite dev serviu CSS obsoleto em 2 de 4 execuções (cache) — resolvido com `rm node_modules/.vite`; prod sempre correto.
 
 ## Execução — T10c: Rabo pixel a pixel, widget retrátil e markdown no chat (feedback)
@@ -429,19 +429,19 @@ Auditoria completa do TalkDoc (SPA React + API FastAPI + SSE + Docker) por prior
 - 21:0x — Commit+push do T5 (`22c5051`); issue #6 fechada.
 - 21:1x — Acordo de trabalho atualizado: **todas as decisões principais passam pelo usuário** (lote + recomendação; mecânicas ficam "vetáveis"). T6: decisões G1–G3 aprovadas (página única, card+badge+animação CSS, erros inline). **Sessão compactada** — handoff em `docs/handoff.md`.
 - 22:0x — **Retomada pós-compactação**: T6 implementado com TDD red-green estrito (7 testes primeiro). Deps front instaladas (TanStack Query, react-router-dom, Vitest+Testing Library). Debug de testes: `user.upload`/fake timers/once-impls (registrado).
-- 22:1x — Validação Docker + Playwright E2E real (upload→processando→pronto, polling 2s). Auditoria ui-vision: tema aprovado pela usuária (H1–H3: terminal escuro, VT323+Plex Mono, gatinho pixel); skills anti-slop instaladas.
+- 22:1x — Validação Docker + Playwright E2E real (upload→processando→pronto, polling 2s). Auditoria ui-vision: tema aprovado pelo usuário (H1–H3: terminal escuro, VT323+Plex Mono, gatinho pixel); skills anti-slop instaladas.
 - 22:2x — **Incidente de segurança detectado pela auditoria**: card rag.pdf exibia URL do provider com chave `AQ.…` (dado velho persistido no T4) → sanitização `formatError` no front (mask `key=` + truncar), limpeza do banco (docs 5 e 2), recomendação de rotação da chave. 10 testes verdes, build/lint limpos. Checkpoint aguardando aprovação de commit do T6.
 - 22:3x — **Redesign do gatinho** (H7): corpo inteiro 24x20 + rabo com wag contínuo + em pé na barra do formulário; auditoria ui-vision (2 rodadas) aprovou; E2E sem órfãos (H8, try/finally). Container prod sincronizado. Aguardando aprovação de commit do T6 + rotação da chave.
-- 22:4x — Ajuste fino do gatinho (pedido da usuária): **base/pernas estreitada** (20px→14px, taper natural do corpo sentado); auditoria aprovou (proporção cabeça:corpo:base ~40:50:10). 10 testes ✓, build/lint ✓, prod sincronizado. Aguardando aprovação de commit do T6.
+- 22:4x — Ajuste fino do gatinho (pedido do usuário): **base/pernas estreitada** (20px→14px, taper natural do corpo sentado); auditoria aprovou (proporção cabeça:corpo:base ~40:50:10). 10 testes ✓, build/lint ✓, prod sincronizado. Aguardando aprovação de commit do T6.
 - 22:5x — Commit+push do T6 (`7169467` docs, `d385474` feat); issue #7 fechada.
 - 23:0x — **T7**: decisões I1–I5 aprovadas (erros inline, gatinho frontal com rabinho atrás, autoscroll+botão, Enter envia, cards no histórico). TDD: 13 testes novos → 24 verdes. Rotas registradas no App (diagnóstico), parser SSE incremental, invalidate no done.
 - 23:1x — E2E real completo (criar conversa → stream "transmitindo▮" capturado → resposta com 3 refs → histórico recarregado); auditorias ui-vision 3x (melhorias I6 aplicadas); flakiness de teste diagnosticada e corrigida (waitFor atômico). Checkpoint aguardando aprovação de commit do T7.
 - 09:0x — **T8**: decisões J1–J3 aprovadas (eslint+prettier, mypy default, branch protection). Backend: mypy instalado e verde (3 erros mecânicos corrigidos: iterador do PyMuPDF + anotação do payload). Frontend: eslint+prettier configurados (flat config, react-hooks/refresh), oxlint removido; refactor do ChatPage (`ChatRoom key={id}`) eliminando setState-em-efeito; prettier normalizou 29 arquivos. 31 testes backend + 25 front + build verdes. Workflow ci.yml escrito. Aguardando aprovação para push/PR/proteção.
 - 09:1x — Branch `feat/t8-ci` + PR #12 (checks verdes: backend 40s, frontend 17s); bump das actions (v5/v6 — Node 20 deprecado). Branch protection ativada em `main` (required checks, strict). Merge do PR #12 → run de push em main verde (32535485245). **Teste negativo**: PR #13 com teste que falha → check FAIL → merge recusado pelo gh → PR fechado. Evidência em `evidence/t8-ci-evidence.txt`. Aguardando aprovação para fechar a issue #9.
 - 09:2x — Issue #9 fechada. **T9**: decisões K1–K2 aprovadas (multi-stage instalador+runtime; clone isolado). Backend multi-stage escrito + .dockerignore + .env.example corrigido; build local validado. **Clone limpo real**: git clone temp → compose up (volumes zerados) → **BUG REAL: nginx sem proxy de API (405 no POST /documents)** — corrigido (proxy + SSE sem buffer); fluxo completo E2E no clone: upload → pronto (2 páginas) → conversa → resposta com 2 refs. Auditoria ui-vision 5 etapas ok (sem bloqueadores). Dev religado e sincronizado com os fixes. Aguardando aprovação para PR e fechar a issue #10.
-- 09:3x — PR #15 (T9) merged com checks verdes; issue #10 fechada. **T10**: decisão L1 (README PT-BR). README escrito (arquitetura Mermaid, execução, dev/tests, ADRs, limitações, IA, 4 screenshots reais) e revisado com a skill `no-ai-slop` (eval.md ok). **Colaboradores PAUSADOS (L3)** por pedido da usuária — passo separado aguardando aprovação. PR do README aberto.
-- 09:4x — PR #16 (README) merged com checks verdes. **Feedback da usuária**: navegação invisível + rabo parado. Diagnóstico: rabo congelado = reduced-motion do Windows/Chrome (provado via Playwright); navegação só por links de texto. Decisões M1 (sidebar retrátil via widget ▤ no canto superior esquerdo) e M2 (rabo sempre mexe). TDD: 5 testes da Sidebar → 30 verdes; E2E com reducedMotion em :8080 validou rabo + navegação + destaque; polimentos M3 da auditoria. Aguardando aprovação para PR.
+- 09:3x — PR #15 (T9) merged com checks verdes; issue #10 fechada. **T10**: decisão L1 (README PT-BR). README escrito (arquitetura Mermaid, execução, dev/tests, ADRs, limitações, IA, 4 screenshots reais) e revisado com a skill `no-ai-slop` (eval.md ok). **Colaboradores PAUSADOS (L3)** por pedido do usuário — passo separado aguardando aprovação. PR do README aberto.
+- 09:4x — PR #16 (README) merged com checks verdes. **Feedback do usuário**: navegação invisível + rabo parado. Diagnóstico: rabo congelado = reduced-motion do Windows/Chrome (provado via Playwright); navegação só por links de texto. Decisões M1 (sidebar retrátil via widget ▤ no canto superior esquerdo) e M2 (rabo sempre mexe). TDD: 5 testes da Sidebar → 30 verdes; E2E com reducedMotion em :8080 validou rabo + navegação + destaque; polimentos M3 da auditoria. Aguardando aprovação para PR.
 - 09:5x — PR #17 (sidebar + rabo) merged. **Novo feedback**: rabo "feio" (rotação rígida), widget sobrepondo a barra aberta, markdown cru no chat. Decisões M4 (rabo pixel a pixel, 14 pixels escalonados), M5 (widget condicional), M6 (MarkdownText próprio) + M7 (prompt). TDD: 8 testes novos → 38 verdes; E2E: 2 frames provam onda, widget some/volta, resposta real sem asteriscos. Auditoria ui-vision ok. Aguardando aprovação para PR.
-- 10:0x — PR #18 merged (o CI pegou prettier faltando num teste editado — lição: rodar format:check local). **Feedback 3**: onda "parece desintegração"; usuária pediu **sprites independentes estilo stop-motion**. M9: flipbook com 4 frames desenhados à mão (raiz 2px fixa, poses distintas), keyframes de opacidade discretas (5fps); auditoria dos 4 frames ok; ciclo verificado (1 frame por vez). Aguardando aprovação para PR.
+- 10:0x — PR #18 merged (o CI pegou prettier faltando num teste editado — lição: rodar format:check local). **Feedback 3**: onda "parece desintegração"; usuário pediu **sprites independentes estilo stop-motion**. M9: flipbook com 4 frames desenhados à mão (raiz 2px fixa, poses distintas), keyframes de opacidade discretas (5fps); auditoria dos 4 frames ok; ciclo verificado (1 frame por vez). Aguardando aprovação para PR.
 - 10:1x — PR #19 (flipbook) merged. **Feedback 4**: "a cauda faz só a ida e se teleporta de volta". M10: ciclo de pêndulo (1→2→3→4→3→2→1, cada pose na ida e na volta); amostragem de 16 pontos em tempo real confirmou ida+volta sem salto. Aguardando aprovação para PR.
 - 10:2x — **OWASP security check** (skill) sobre todo o código: corrigidos headers de segurança no nginx (CSP/X-Frame-Options/nosniff/Referrer-Policy), limites de tamanho nos inputs (question/title/document_ids, 2 testes TDD novos), `/docs` controlável por env; auditado e ok: secrets (git limpo — linha "VULNERABLE" é exemplo do skill), injeção (ORM + React), upload (magic bytes+UUID), SSRF (nenhum), CORS, deps (npm+pip audit 0). Recomendações registradas (auth/rate-limit/rotação de chave). Aguardando aprovação para PR.
