@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     qdrant_timeout: int = 3
     retrieval_top_k: int = 5
     retrieval_threshold: float = 0.3
+    docs_enabled: bool = True
 
     @property
     def cors_origins_list(self) -> list[str]:

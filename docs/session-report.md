@@ -299,6 +299,40 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - **E2E em :8080** (reducedMotion reduce): 14 pixels com delays escalonados 0.07s (`tail-wave`); **2 frames capturados provam onda real** (auditoria ui-vision confirmou movimento independente, não rígido); widget some/volta ✓; resposta real do Groq com negrito/código/lista **renderizada sem asteriscos crus** ✓ (evidências `t10c-*`).
 - **Retrabalho (M9)**: a onda "desintegrava" o rabo; flipbook de 4 sprites implementado; **auditoria dos 4 frames isolados** (forçados via evaluate): conectados ao corpo, direções distintas, coerentes (evidências `t10d-rabo-frame1..4`); **ciclo verificado em tempo real**: 6 amostras x 140ms → exatamente 1 frame visível por vez, alternando em sequência; raiz de 2px mantida em todos os frames. 38 testes front + 31 backend verdes; build/lint/prettier ok.
 
+## Execução — OWASP Security Check (skill) — pós-entrega
+
+Auditoria completa do TalkDoc (SPA React + API FastAPI + SSE + Docker) por prioridade, seguindo a skill `owasp-security-check`.
+
+### Achados corrigidos
+
+| Severidade | Categoria | Arquivo | Problema | Impacto | Correção |
+|---|---|---|---|---|---|
+| **HIGH** | security-headers | `frontend/nginx.conf` | Sem headers de segurança (CSP, X-Frame-Options, nosniff, Referrer-Policy) | Clickjacking, MIME-sniffing, vazamento de referer | CSP `default-src 'self'` + Google Fonts, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` — validado ao vivo no :8080, app boota com 0 erros de console |
+| **MEDIUM** | api-security | `backend/app/api/schemas.py` | `ChatRequest.question` e `ConversationCreate.title` sem limite; `document_ids` sem validação | Payloads gigantes → custo/quota do LLM (DoS por custo) | `question max_length=4000`, `title max_length=200`, `document_ids 1..50` — 2 testes TDD novos (422) |
+| **LOW** | security-misconfiguration | `backend/app/main.py` + `config.py` | Swagger `/docs`/`/redoc` sempre expostos | Divulgação da superfície da API | `docs_enabled` (env, default true p/ demo) controla os dois |
+
+### Verificado e OK (sem ação)
+
+- **secrets-management**: `.env` gitignored; histórico git auditado — só menções truncadas em docs; a linha `apiKey: "AIzaSyB... // VULNERABLE"` no histórico é **exemplo do próprio skill** (`rules/api-security.md`); chaves só por header (`x-goog-api-key`, `Bearer`), nunca em URL
+- **injection-attacks**: SQL 100% ORM (sem `text()`/concatenação); XSS — React escapa tudo, zero `dangerouslySetInnerHTML`/`innerHTML` (MarkdownText usa elementos React); sem eval/subprocess
+- **file-upload-security**: magic bytes `%PDF` + teto 20MB em streaming + nome sanitizado (NFKD/whitelist) + armazenamento UUID (sem path-traversal)
+- **ssrf-attacks**: nenhuma URL do usuário — providers fixos no código
+- **cors-configuration**: origens explícitas (5173/8080), sem wildcard, `allow_credentials` ok com origens fixas
+- **sensitive-data-exposure**: erros de provider sanitizados no backend (T4/T5); `formatError` mascara `key=`/`token=` no front; logs sem secrets
+- **vulnerable-dependencies**: `npm audit` 0; `pip-audit` sem achados
+- **mass-assignment**: schemas Pydantic explícitos; sem redirects por parâmetro
+
+### Recomendações (decisão de escopo — fora deste PR)
+
+- **CRITICAL — sem autenticação**: nenhum endpoint exige auth (documentado no README como limitação; ok para demo local, não para expor na internet)
+- **MEDIUM — rate limiting**: sem limite de requisições no chat/upload (ex.: slowapi por IP); constraints de tamanho reduziram o dano
+- **LOW — rotacionar GEMINI_API_KEY** (pendência dos 2 incidentes históricos, já sanitizados, nunca no git)
+- **LOW — HSTS** quando/publicar atrás de HTTPS
+
+### Verificação
+
+33 testes backend + 38 front verdes; ruff/mypy/eslint/prettier/build limpos; headers confirmados via HTTP real em :8080; app funcional com CSP (0 erros de console); `/docs` controlável por env.
+
 ## Registro da sessão
 
 - 14:54 — instaladas skills de planejamento (8).
@@ -348,3 +382,4 @@ Criado `CONTEXT.md` com os termos do domínio: Documento, Processamento, Chunk, 
 - 09:5x — PR #17 (sidebar + rabo) merged. **Novo feedback**: rabo "feio" (rotação rígida), widget sobrepondo a barra aberta, markdown cru no chat. Decisões M4 (rabo pixel a pixel, 14 pixels escalonados), M5 (widget condicional), M6 (MarkdownText próprio) + M7 (prompt). TDD: 8 testes novos → 38 verdes; E2E: 2 frames provam onda, widget some/volta, resposta real sem asteriscos. Auditoria ui-vision ok. Aguardando aprovação para PR.
 - 10:0x — PR #18 merged (o CI pegou prettier faltando num teste editado — lição: rodar format:check local). **Feedback 3**: onda "parece desintegração"; usuária pediu **sprites independentes estilo stop-motion**. M9: flipbook com 4 frames desenhados à mão (raiz 2px fixa, poses distintas), keyframes de opacidade discretas (5fps); auditoria dos 4 frames ok; ciclo verificado (1 frame por vez). Aguardando aprovação para PR.
 - 10:1x — PR #19 (flipbook) merged. **Feedback 4**: "a cauda faz só a ida e se teleporta de volta". M10: ciclo de pêndulo (1→2→3→4→3→2→1, cada pose na ida e na volta); amostragem de 16 pontos em tempo real confirmou ida+volta sem salto. Aguardando aprovação para PR.
+- 10:2x — **OWASP security check** (skill) sobre todo o código: corrigidos headers de segurança no nginx (CSP/X-Frame-Options/nosniff/Referrer-Policy), limites de tamanho nos inputs (question/title/document_ids, 2 testes TDD novos), `/docs` controlável por env; auditado e ok: secrets (git limpo — linha "VULNERABLE" é exemplo do skill), injeção (ORM + React), upload (magic bytes+UUID), SSRF (nenhum), CORS, deps (npm+pip audit 0). Recomendações registradas (auth/rate-limit/rotação de chave). Aguardando aprovação para PR.
